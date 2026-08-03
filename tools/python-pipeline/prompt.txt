@@ -1,0 +1,74 @@
+Create a pictogram for a complete set of consistent fitness exercise pictograms.
+
+Style:
+
+- modern minimalist fitness icon design
+- clean human silhouette
+- simple black and white vector style
+- inspired by Olympic sports pictograms
+- professional mobile fitness app aesthetic
+- clear and instantly recognizable movement
+
+The same human character must be used for every exercise:
+
+- gender-neutral human figure
+- no face
+- no hair
+- no clothing details
+- simple athletic body proportions
+- identical head size
+- identical body proportions in every image
+- same line thickness
+- same visual style
+
+Picture attributes:
+
+- transparent background
+- centered composition
+- square format (1:1)
+- full body visible
+- no text
+- no labels
+- no numbers
+- no equipment unless the exercise requires it
+- no shadows
+- no background objects
+- no realistic photography
+- no muscles or anatomical details
+
+The image must clearly show the starting position or the main movement position of the exercise.
+
+The body posture must be anatomically correct.
+
+The exercise should be recognizable instantly without explanation.
+
+Use:
+
+- simple body angles
+- clear limb positions
+- natural movement posture
+
+Avoid:
+
+- complicated poses
+- dynamic action effects
+- exaggerated muscles
+- cartoon style
+
+Create one fitness exercise pictogram following the exact Fitness Exercise Pictogram Style Guide.
+
+Exercise name:  
+[exercise-name]
+
+Required movement:  
+[exercise-description]
+
+Generate:
+
+- one clean minimalist fitness pictogram
+- same character design as previous exercises
+- same proportions and line style
+- transparent background
+- suitable for a professional mobile workout application
+
+The final image must communicate the exercise clearly to a beginner user.

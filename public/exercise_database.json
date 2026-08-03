@@ -1,0 +1,541 @@
+[
+  {
+    "exercise_name": "March in Place",
+    "exercise_name_hu": "Helyben járás",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Standing, alternating knee raises.",
+    "image_file": "march_in_place_1.png"
+  },
+  {
+    "exercise_name": "Jog in Place",
+    "exercise_name_hu": "Helyben futás",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Running in place.",
+    "image_file": "jog_in_place.png"
+  },
+  {
+    "exercise_name": "Jumping Jack",
+    "exercise_name_hu": "Ugróterpesz",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Arms and legs spread wide in mid-air, returning to a centered standing position.",
+    "image_file": "jumping_jack.png"
+  },
+  {
+    "exercise_name": "Arm Circles Forward",
+    "exercise_name_hu": "Karkörzés előre",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Arms extended, rotating forward.",
+    "image_file": "arm_circles_forward.png"
+  },
+  {
+    "exercise_name": "Arm Circles Backward",
+    "exercise_name_hu": "Karkörzés hátra",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Rotate arms backward in circles.",
+    "image_file": "arm_circles_backward.png"
+  },
+  {
+    "exercise_name": "Hip Circles",
+    "exercise_name_hu": "Csípőkörzés",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Rotate hips in a circular motion.",
+    "image_file": "hip_circles.png"
+  },
+  {
+    "exercise_name": "Side Bend",
+    "exercise_name_hu": "Törzsdöntés oldalra",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Stand upright, reach one arm overhead, and lean torso to the opposite side.",
+    "image_file": "side_bend.png"
+  },
+  {
+    "exercise_name": "Torso Twist",
+    "exercise_name_hu": "Törzscsavarás",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Rotate torso side to side.",
+    "image_file": "torso_twist.png"
+  },
+  {
+    "exercise_name": "Heel Raise",
+    "exercise_name_hu": "Sarokemelés",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Rise onto toes.",
+    "image_file": "heel_raise.png"
+  },
+  {
+    "exercise_name": "High Knees",
+    "exercise_name_hu": "Térdemelés",
+    "group": "1. Bemelegítés (Warm-up)",
+    "description": "Run in place, lifting knees to waist height.",
+    "image_file": "high_knees_1.png"
+  },
+  {
+    "exercise_name": "Squat",
+    "exercise_name_hu": "Guggolás",
+    "group": "2. Láb (Legs)",
+    "description": "Lower body weight bearing; hips descend and rise.",
+    "image_file": "squat.png"
+  },
+  {
+    "exercise_name": "Half Squat",
+    "exercise_name_hu": "Félig guggolás",
+    "group": "2. Láb (Legs)",
+    "description": "Stand feet shoulder-width, lower hips halfway, keep chest up, return to standing.",
+    "image_file": "half_squat.png"
+  },
+  {
+    "exercise_name": "Forward Lunge",
+    "exercise_name_hu": "Kitörés előre",
+    "group": "2. Láb (Legs)",
+    "description": "Step forward, bend knees until both form 90-degree angles, return to standing.",
+    "image_file": "forward_lunge.png"
+  },
+  {
+    "exercise_name": "Reverse Lunge",
+    "exercise_name_hu": "Hátralépéses kitörés",
+    "group": "2. Láb (Legs)",
+    "description": "Step back, lower hips until knees form 90-degree angles, return to start.",
+    "image_file": "reverse_lunge.png"
+  },
+  {
+    "exercise_name": "Side Lunge",
+    "exercise_name_hu": "Oldalsó kitörés",
+    "group": "2. Láb (Legs)",
+    "description": "Step to the side, bending one knee while keeping the other leg straight.",
+    "image_file": "side_lunge.png"
+  },
+  {
+    "exercise_name": "Wall Sit",
+    "exercise_name_hu": "Falnál ülés",
+    "group": "2. Láb (Legs)",
+    "description": "Back against wall, knees bent at 90 degrees, hold position.",
+    "image_file": "wall_sit.png"
+  },
+  {
+    "exercise_name": "Calf Raise",
+    "exercise_name_hu": "Vádliemelés",
+    "group": "2. Láb (Legs)",
+    "description": "Heels lifted, weight on toes.",
+    "image_file": "calf_raise.png"
+  },
+  {
+    "exercise_name": "Glute Bridge",
+    "exercise_name_hu": "Híd",
+    "group": "2. Láb (Legs)",
+    "description": "Lie on back, knees bent, lift hips toward ceiling.",
+    "image_file": "glute_bridge.png"
+  },
+  {
+    "exercise_name": "Single-leg Glute Bridge",
+    "exercise_name_hu": "Egylábas híd",
+    "group": "2. Láb (Legs)",
+    "description": "Lying on back, one knee bent, foot flat, other leg extended; lift hips toward ceiling.",
+    "image_file": "single_leg_glute_bridge.png"
+  },
+  {
+    "exercise_name": "Step-up",
+    "exercise_name_hu": "Step-up",
+    "group": "2. Láb (Legs)",
+    "description": "Step onto platform, alternate legs.",
+    "image_file": "step_up.png"
+  },
+  {
+    "exercise_name": "Push-up",
+    "exercise_name_hu": "Fekvőtámasz",
+    "group": "3. Mellkas és kar (Chest & Arms)",
+    "description": "Lower and push body using arms.",
+    "image_file": "push_up.png"
+  },
+  {
+    "exercise_name": "Knee Push-up",
+    "exercise_name_hu": "Térdelő fekvőtámasz",
+    "group": "3. Mellkas és kar (Chest & Arms)",
+    "description": "Push-up on knees.",
+    "image_file": "knee_push_up.png"
+  },
+  {
+    "exercise_name": "Diamond Push-up",
+    "exercise_name_hu": "Szűk fekvőtámasz",
+    "group": "3. Mellkas és kar (Chest & Arms)",
+    "description": "Hands in diamond shape, push-ups.",
+    "image_file": "diamond_push_up.png"
+  },
+  {
+    "exercise_name": "Chair Dips",
+    "exercise_name_hu": "Tricepsz tolódzkodás széken",
+    "group": "3. Mellkas és kar (Chest & Arms)",
+    "description": "Hands on edge, lower body, push up.",
+    "image_file": "chair_dips.png"
+  },
+  {
+    "exercise_name": "Shoulder Tap Plank",
+    "exercise_name_hu": "Plank vállérintéssel",
+    "group": "3. Mellkas és kar (Chest & Arms)",
+    "description": "High plank, tap opposite shoulder.",
+    "image_file": "shoulder_tap_plank.png"
+  },
+  {
+    "exercise_name": "Bear Crawl",
+    "exercise_name_hu": "Medvejárás",
+    "group": "3. Mellkas és kar (Chest & Arms)",
+    "description": "Hands and feet on floor, crawl forward.",
+    "image_file": "bear_crawl.png"
+  },
+  {
+    "exercise_name": "Superman",
+    "exercise_name_hu": "Superman",
+    "group": "4. Hát (Back)",
+    "description": "Prone position, arms and legs extended and lifted.",
+    "image_file": "superman.png"
+  },
+  {
+    "exercise_name": "Reverse Snow Angel",
+    "exercise_name_hu": "Fordított hóangyal",
+    "group": "4. Hát (Back)",
+    "description": "Lie prone, arms at sides, palms down. Sweep arms in an arc above head while lifting chest slightly.",
+    "image_file": "reverse_snow_angel.png"
+  },
+  {
+    "exercise_name": "Bird Dog",
+    "exercise_name_hu": "Madár-kutya",
+    "group": "4. Hát (Back)",
+    "description": "Hands and knees, extend opposite arm and leg.",
+    "image_file": "bird_dog.png"
+  },
+  {
+    "exercise_name": "Swimmer",
+    "exercise_name_hu": "Úszó mozdulat",
+    "group": "4. Hát (Back)",
+    "description": "Lying prone, alternate lifting opposite arm and leg.",
+    "image_file": "swimmer.png"
+  },
+  {
+    "exercise_name": "Scapular Retraction",
+    "exercise_name_hu": "Lapockazárás",
+    "group": "4. Hát (Back)",
+    "description": "Squeeze shoulder blades together.",
+    "image_file": "scapular_retraction.png"
+  },
+  {
+    "exercise_name": "Plank",
+    "exercise_name_hu": "Plank",
+    "group": "5. Core / Törzs",
+    "description": "Body straight, supported by forearms and toes.",
+    "image_file": "plank.png"
+  },
+  {
+    "exercise_name": "Side Plank",
+    "exercise_name_hu": "Oldalsó plank",
+    "group": "5. Core / Törzs",
+    "description": "Side body lift, balancing on forearm.",
+    "image_file": "side_plank.png"
+  },
+  {
+    "exercise_name": "Forearm Plank",
+    "exercise_name_hu": "Alkar plank",
+    "group": "5. Core / Törzs",
+    "description": "Forearms on floor, body in straight line.",
+    "image_file": "forearm_plank.png"
+  },
+  {
+    "exercise_name": "Sit-up",
+    "exercise_name_hu": "Felülés",
+    "group": "5. Core / Törzs",
+    "description": "Lie down, knees bent, lift torso toward knees.",
+    "image_file": "sit_up.png"
+  },
+  {
+    "exercise_name": "Crunch",
+    "exercise_name_hu": "Ropogtatás",
+    "group": "5. Core / Törzs",
+    "description": "Lying back, knees bent, lifting shoulders toward knees.",
+    "image_file": "crunch.png"
+  },
+  {
+    "exercise_name": "Bicycle Crunch",
+    "exercise_name_hu": "Biciklis hasprés",
+    "group": "5. Core / Törzs",
+    "description": "Lying on back, alternating elbow to opposite knee with pedaling legs.",
+    "image_file": "bicycle_crunch.png"
+  },
+  {
+    "exercise_name": "Russian Twist",
+    "exercise_name_hu": "Orosz csavarás",
+    "group": "5. Core / Törzs",
+    "description": "Seated torso rotation.",
+    "image_file": "russian_twist.png"
+  },
+  {
+    "exercise_name": "Mountain Climber",
+    "exercise_name_hu": "Hegymászó",
+    "group": "5. Core / Törzs",
+    "description": "High plank position, alternate driving knees toward chest.",
+    "image_file": "mountain_climber.png"
+  },
+  {
+    "exercise_name": "Dead Bug",
+    "exercise_name_hu": "Halott bogár",
+    "group": "5. Core / Törzs",
+    "description": "Lying on back, alternate extending opposite arm and leg while keeping lower back pressed to floor.",
+    "image_file": "dead_bug.png"
+  },
+  {
+    "exercise_name": "Heel Touch",
+    "exercise_name_hu": "Sarokérintés",
+    "group": "5. Core / Törzs",
+    "description": "Lying on back, alternate reaching hands to heels.",
+    "image_file": "heel_touch.png"
+  },
+  {
+    "exercise_name": "Burpee",
+    "exercise_name_hu": "Burpee",
+    "group": "6. Kardió",
+    "description": "Squat, jump, push-up.",
+    "image_file": "burpee.png"
+  },
+  {
+    "exercise_name": "High Knees",
+    "exercise_name_hu": "Magas térdemelés",
+    "group": "6. Kardió",
+    "description": "Run in place, lifting knees to waist height.",
+    "image_file": "high_knees_2.png"
+  },
+  {
+    "exercise_name": "Butt Kicks",
+    "exercise_name_hu": "Fenékre sarok",
+    "group": "6. Kardió",
+    "description": "Jogging in place, kicking heels toward glutes.",
+    "image_file": "butt_kicks.png"
+  },
+  {
+    "exercise_name": "Skater",
+    "exercise_name_hu": "Korcsolyázó ugrás",
+    "group": "6. Kardió",
+    "description": "Lateral hop, landing on alternating feet.",
+    "image_file": "skater.png"
+  },
+  {
+    "exercise_name": "Jump Squat",
+    "exercise_name_hu": "Guggolásból felugrás",
+    "group": "6. Kardió",
+    "description": "Squat down, then jump explosively upward.",
+    "image_file": "jump_squat.png"
+  },
+  {
+    "exercise_name": "Jump Lunge",
+    "exercise_name_hu": "Ugró kitörés",
+    "group": "6. Kardió",
+    "description": "Split stance; jump to switch legs in mid-air.",
+    "image_file": "jump_lunge.png"
+  },
+  {
+    "exercise_name": "Frog Jump",
+    "exercise_name_hu": "Békaugrás",
+    "group": "6. Kardió",
+    "description": "Squat down, hands on ground; explode upward into a jump.",
+    "image_file": "frog_jump.png"
+  },
+  {
+    "exercise_name": "Fast Feet",
+    "exercise_name_hu": "Gyors lábmunka",
+    "group": "6. Kardió",
+    "description": "Rapidly alternating small steps in place.",
+    "image_file": "fast_feet.png"
+  },
+  {
+    "exercise_name": "Cat-Cow",
+    "exercise_name_hu": "Macska–teve",
+    "group": "7. Mobilitás",
+    "description": "Hands and knees, alternate arching and rounding back.",
+    "image_file": "cat_cow.png"
+  },
+  {
+    "exercise_name": "Child's Pose",
+    "exercise_name_hu": "Gyermekpóz",
+    "group": "7. Mobilitás",
+    "description": "Kneeling on floor, torso folded forward, arms extended, forehead resting on mat.",
+    "image_file": "child_s_pose.png"
+  },
+  {
+    "exercise_name": "Downward Dog",
+    "exercise_name_hu": "Lefelé néző kutya",
+    "group": "7. Mobilitás",
+    "description": "Inverted V shape, hands and feet on floor, hips raised high.",
+    "image_file": "downward_dog.png"
+  },
+  {
+    "exercise_name": "Hip Opener",
+    "exercise_name_hu": "Csípőnyitás",
+    "group": "7. Mobilitás",
+    "description": "Knees wide, feet together, stretching hips.",
+    "image_file": "hip_opener.png"
+  },
+  {
+    "exercise_name": "Chest Opener",
+    "exercise_name_hu": "Mellkasnyitás",
+    "group": "7. Mobilitás",
+    "description": "Arms back, chest expanded.",
+    "image_file": "chest_opener.png"
+  },
+  {
+    "exercise_name": "Ankle Circles",
+    "exercise_name_hu": "Bokakörzés",
+    "group": "7. Mobilitás",
+    "description": "Rotate foot in circles.",
+    "image_file": "ankle_circles.png"
+  },
+  {
+    "exercise_name": "Neck Rolls",
+    "exercise_name_hu": "Nyakkörzés",
+    "group": "7. Mobilitás",
+    "description": "Slowly roll head in a full circular motion.",
+    "image_file": "neck_rolls.png"
+  },
+  {
+    "exercise_name": "Shoulder Mobility",
+    "exercise_name_hu": "Vállmobilizálás",
+    "group": "7. Mobilitás",
+    "description": "Rotate arms in wide circles.",
+    "image_file": "shoulder_mobility.png"
+  },
+  {
+    "exercise_name": "Hamstring Stretch",
+    "exercise_name_hu": "Combhajlító nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Seated or standing, extend one leg forward, hinge at hips, keep back straight.",
+    "image_file": "hamstring_stretch.png"
+  },
+  {
+    "exercise_name": "Quadriceps Stretch",
+    "exercise_name_hu": "Négyfejű combizom nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Standing, pull one heel toward glutes.",
+    "image_file": "quadriceps_stretch.png"
+  },
+  {
+    "exercise_name": "Calf Stretch",
+    "exercise_name_hu": "Vádli nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Stand facing wall, one leg back, heel pressed down.",
+    "image_file": "calf_stretch.png"
+  },
+  {
+    "exercise_name": "Glute Stretch",
+    "exercise_name_hu": "Farizom nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Lying on back, pull one knee toward chest.",
+    "image_file": "glute_stretch.png"
+  },
+  {
+    "exercise_name": "Hip Flexor Stretch",
+    "exercise_name_hu": "Csípőhorpasz nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Kneeling lunge, torso upright, hips pushed forward.",
+    "image_file": "hip_flexor_stretch.png"
+  },
+  {
+    "exercise_name": "Chest Stretch",
+    "exercise_name_hu": "Mellkas nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Arms open, chest expanded.",
+    "image_file": "chest_stretch.png"
+  },
+  {
+    "exercise_name": "Shoulder Stretch",
+    "exercise_name_hu": "Váll nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Arm pulled across chest.",
+    "image_file": "shoulder_stretch.png"
+  },
+  {
+    "exercise_name": "Back Stretch",
+    "exercise_name_hu": "Hát nyújtása",
+    "group": "8. Nyújtás",
+    "description": "Hands clasped forward, rounded back, chin to chest.",
+    "image_file": "back_stretch.png"
+  },
+  {
+    "exercise_name": "Single-leg Stand",
+    "exercise_name_hu": "Egylábas állás",
+    "group": "9. Egyensúly",
+    "description": "Stand on one leg.",
+    "image_file": "single_leg_stand.png"
+  },
+  {
+    "exercise_name": "Assisted Pistol Squat",
+    "exercise_name_hu": "Egylábas guggolás székre",
+    "group": "9. Egyensúly",
+    "description": "One-legged squat holding support.",
+    "image_file": "assisted_pistol_squat.png"
+  },
+  {
+    "exercise_name": "Heel-to-Toe Walk",
+    "exercise_name_hu": "Saroktól lábujjig járás",
+    "group": "9. Egyensúly",
+    "description": "Walk in a straight line, placing the heel of one foot directly against the toes of the other.",
+    "image_file": "heel_to_toe_walk.png"
+  },
+  {
+    "exercise_name": "Tree Pose",
+    "exercise_name_hu": "Fa póz",
+    "group": "9. Egyensúly",
+    "description": "Standing on one leg, foot against opposite inner thigh, hands in prayer position.",
+    "image_file": "tree_pose.png"
+  },
+  {
+    "exercise_name": "Chair Stand",
+    "exercise_name_hu": "Székről felállás",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Stand up from a seated position.",
+    "image_file": "chair_stand.png"
+  },
+  {
+    "exercise_name": "Wall Push-up",
+    "exercise_name_hu": "Falnál fekvőtámasz",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Hands on wall, push chest toward surface.",
+    "image_file": "wall_push_up.png"
+  },
+  {
+    "exercise_name": "Seated Knee Raise",
+    "exercise_name_hu": "Ülő térdemelés",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Sit upright, lift knees toward chest, lower slowly.",
+    "image_file": "seated_knee_raise.png"
+  },
+  {
+    "exercise_name": "Seated Arm Circles",
+    "exercise_name_hu": "Ülő karkörzés",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Rotate arms in small, controlled circles while seated.",
+    "image_file": "seated_arm_circles.png"
+  },
+  {
+    "exercise_name": "Seated Torso Twist",
+    "exercise_name_hu": "Ülő törzscsavarás",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Rotate torso side to side while seated.",
+    "image_file": "seated_torso_twist.png"
+  },
+  {
+    "exercise_name": "March in Place",
+    "exercise_name_hu": "Helyben séta",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Standing, alternating lifting knees.",
+    "image_file": "march_in_place_2.png"
+  },
+  {
+    "exercise_name": "Toe and Heel Raises",
+    "exercise_name_hu": "Sarok-lábujj emelés",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Rise onto toes, then rock back onto heels.",
+    "image_file": "toe_and_heel_raises.png"
+  },
+  {
+    "exercise_name": "Seated Leg Extension",
+    "exercise_name_hu": "Ülő lábnyújtás",
+    "group": "10. Könnyített gyakorlatok időseknek vagy teljesen kezdőknek",
+    "description": "Extend legs against resistance while seated.",
+    "image_file": "seated_leg_extension.png"
+  }
+]

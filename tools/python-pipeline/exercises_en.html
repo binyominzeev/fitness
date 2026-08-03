@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fitness Exercises</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --text: #1f2933;
+      --muted: #52606d;
+      --card: #ffffff;
+      --line: #d9e2ec;
+      --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 { margin: 0; font-size: 30px; }
+    .subtitle { margin: 8px 0 0; color: var(--muted); }
+    .meta { margin-top: 12px; color: var(--muted); font-size: 14px; }
+
+    .group { margin-bottom: 28px; }
+    h2 { margin: 0 0 14px; font-size: 24px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 260px;
+    }
+
+    .icon-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .icon-wrap img {
+      width: 88%;
+      height: 88%;
+      object-fit: contain;
+      background: #ffffff;
+      border-radius: 8px;
+    }
+
+    h3 {
+      margin: 12px 0 8px;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 14px; }
+      h1 { font-size: 24px; }
+      h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Fitness Exercises</h1>
+      <p class="subtitle">Grouped exercise catalog with icons</p>
+      <p class="meta">Total exercises: 77</p>
+    </header>
+
+    <section class="group">
+      <h2>Warm-up</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/march_in_place_1.png" alt="March in Place" loading="lazy" />
+        </div>
+        <h3>March in Place</h3>
+        <p>Standing, alternating knee raises.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/jog_in_place.png" alt="Jog in Place" loading="lazy" />
+        </div>
+        <h3>Jog in Place</h3>
+        <p>Running in place.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/jumping_jack.png" alt="Jumping Jack" loading="lazy" />
+        </div>
+        <h3>Jumping Jack</h3>
+        <p>Arms and legs spread wide in mid-air, returning to a centered standing position.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/arm_circles_forward.png" alt="Arm Circles Forward" loading="lazy" />
+        </div>
+        <h3>Arm Circles Forward</h3>
+        <p>Arms extended, rotating forward.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/arm_circles_backward.png" alt="Arm Circles Backward" loading="lazy" />
+        </div>
+        <h3>Arm Circles Backward</h3>
+        <p>Rotate arms backward in circles.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/hip_circles.png" alt="Hip Circles" loading="lazy" />
+        </div>
+        <h3>Hip Circles</h3>
+        <p>Rotate hips in a circular motion.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/side_bend.png" alt="Side Bend" loading="lazy" />
+        </div>
+        <h3>Side Bend</h3>
+        <p>Stand upright, reach one arm overhead, and lean torso to the opposite side.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/torso_twist.png" alt="Torso Twist" loading="lazy" />
+        </div>
+        <h3>Torso Twist</h3>
+        <p>Rotate torso side to side.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/heel_raise.png" alt="Heel Raise" loading="lazy" />
+        </div>
+        <h3>Heel Raise</h3>
+        <p>Rise onto toes.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/high_knees_1.png" alt="High Knees" loading="lazy" />
+        </div>
+        <h3>High Knees</h3>
+        <p>Run in place, lifting knees to waist height.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Legs</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/squat.png" alt="Squat" loading="lazy" />
+        </div>
+        <h3>Squat</h3>
+        <p>Lower body weight bearing; hips descend and rise.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/half_squat.png" alt="Half Squat" loading="lazy" />
+        </div>
+        <h3>Half Squat</h3>
+        <p>Stand feet shoulder-width, lower hips halfway, keep chest up, return to standing.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/forward_lunge.png" alt="Forward Lunge" loading="lazy" />
+        </div>
+        <h3>Forward Lunge</h3>
+        <p>Step forward, bend knees until both form 90-degree angles, return to standing.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/reverse_lunge.png" alt="Reverse Lunge" loading="lazy" />
+        </div>
+        <h3>Reverse Lunge</h3>
+        <p>Step back, lower hips until knees form 90-degree angles, return to start.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/side_lunge.png" alt="Side Lunge" loading="lazy" />
+        </div>
+        <h3>Side Lunge</h3>
+        <p>Step to the side, bending one knee while keeping the other leg straight.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/wall_sit.png" alt="Wall Sit" loading="lazy" />
+        </div>
+        <h3>Wall Sit</h3>
+        <p>Back against wall, knees bent at 90 degrees, hold position.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/calf_raise.png" alt="Calf Raise" loading="lazy" />
+        </div>
+        <h3>Calf Raise</h3>
+        <p>Heels lifted, weight on toes.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/glute_bridge.png" alt="Glute Bridge" loading="lazy" />
+        </div>
+        <h3>Glute Bridge</h3>
+        <p>Lie on back, knees bent, lift hips toward ceiling.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/single_leg_glute_bridge.png" alt="Single-leg Glute Bridge" loading="lazy" />
+        </div>
+        <h3>Single-leg Glute Bridge</h3>
+        <p>Lying on back, one knee bent, foot flat, other leg extended; lift hips toward ceiling.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/step_up.png" alt="Step-up" loading="lazy" />
+        </div>
+        <h3>Step-up</h3>
+        <p>Step onto platform, alternate legs.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Chest &amp; Arms</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/push_up.png" alt="Push-up" loading="lazy" />
+        </div>
+        <h3>Push-up</h3>
+        <p>Lower and push body using arms.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/knee_push_up.png" alt="Knee Push-up" loading="lazy" />
+        </div>
+        <h3>Knee Push-up</h3>
+        <p>Push-up on knees.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/diamond_push_up.png" alt="Diamond Push-up" loading="lazy" />
+        </div>
+        <h3>Diamond Push-up</h3>
+        <p>Hands in diamond shape, push-ups.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/chair_dips.png" alt="Chair Dips" loading="lazy" />
+        </div>
+        <h3>Chair Dips</h3>
+        <p>Hands on edge, lower body, push up.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/shoulder_tap_plank.png" alt="Shoulder Tap Plank" loading="lazy" />
+        </div>
+        <h3>Shoulder Tap Plank</h3>
+        <p>High plank, tap opposite shoulder.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/bear_crawl.png" alt="Bear Crawl" loading="lazy" />
+        </div>
+        <h3>Bear Crawl</h3>
+        <p>Hands and feet on floor, crawl forward.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Back</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/superman.png" alt="Superman" loading="lazy" />
+        </div>
+        <h3>Superman</h3>
+        <p>Prone position, arms and legs extended and lifted.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/reverse_snow_angel.png" alt="Reverse Snow Angel" loading="lazy" />
+        </div>
+        <h3>Reverse Snow Angel</h3>
+        <p>Lie prone, arms at sides, palms down. Sweep arms in an arc above head while lifting chest slightly.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/bird_dog.png" alt="Bird Dog" loading="lazy" />
+        </div>
+        <h3>Bird Dog</h3>
+        <p>Hands and knees, extend opposite arm and leg.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/swimmer.png" alt="Swimmer" loading="lazy" />
+        </div>
+        <h3>Swimmer</h3>
+        <p>Lying prone, alternate lifting opposite arm and leg.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/scapular_retraction.png" alt="Scapular Retraction" loading="lazy" />
+        </div>
+        <h3>Scapular Retraction</h3>
+        <p>Squeeze shoulder blades together.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Core</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/plank.png" alt="Plank" loading="lazy" />
+        </div>
+        <h3>Plank</h3>
+        <p>Body straight, supported by forearms and toes.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/side_plank.png" alt="Side Plank" loading="lazy" />
+        </div>
+        <h3>Side Plank</h3>
+        <p>Side body lift, balancing on forearm.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/forearm_plank.png" alt="Forearm Plank" loading="lazy" />
+        </div>
+        <h3>Forearm Plank</h3>
+        <p>Forearms on floor, body in straight line.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/sit_up.png" alt="Sit-up" loading="lazy" />
+        </div>
+        <h3>Sit-up</h3>
+        <p>Lie down, knees bent, lift torso toward knees.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/crunch.png" alt="Crunch" loading="lazy" />
+        </div>
+        <h3>Crunch</h3>
+        <p>Lying back, knees bent, lifting shoulders toward knees.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/bicycle_crunch.png" alt="Bicycle Crunch" loading="lazy" />
+        </div>
+        <h3>Bicycle Crunch</h3>
+        <p>Lying on back, alternating elbow to opposite knee with pedaling legs.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/russian_twist.png" alt="Russian Twist" loading="lazy" />
+        </div>
+        <h3>Russian Twist</h3>
+        <p>Seated torso rotation.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/mountain_climber.png" alt="Mountain Climber" loading="lazy" />
+        </div>
+        <h3>Mountain Climber</h3>
+        <p>High plank position, alternate driving knees toward chest.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/dead_bug.png" alt="Dead Bug" loading="lazy" />
+        </div>
+        <h3>Dead Bug</h3>
+        <p>Lying on back, alternate extending opposite arm and leg while keeping lower back pressed to floor.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/heel_touch.png" alt="Heel Touch" loading="lazy" />
+        </div>
+        <h3>Heel Touch</h3>
+        <p>Lying on back, alternate reaching hands to heels.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Kardió</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/burpee.png" alt="Burpee" loading="lazy" />
+        </div>
+        <h3>Burpee</h3>
+        <p>Squat, jump, push-up.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/high_knees_2.png" alt="High Knees" loading="lazy" />
+        </div>
+        <h3>High Knees</h3>
+        <p>Run in place, lifting knees to waist height.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/butt_kicks.png" alt="Butt Kicks" loading="lazy" />
+        </div>
+        <h3>Butt Kicks</h3>
+        <p>Jogging in place, kicking heels toward glutes.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/skater.png" alt="Skater" loading="lazy" />
+        </div>
+        <h3>Skater</h3>
+        <p>Lateral hop, landing on alternating feet.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/jump_squat.png" alt="Jump Squat" loading="lazy" />
+        </div>
+        <h3>Jump Squat</h3>
+        <p>Squat down, then jump explosively upward.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/jump_lunge.png" alt="Jump Lunge" loading="lazy" />
+        </div>
+        <h3>Jump Lunge</h3>
+        <p>Split stance; jump to switch legs in mid-air.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/frog_jump.png" alt="Frog Jump" loading="lazy" />
+        </div>
+        <h3>Frog Jump</h3>
+        <p>Squat down, hands on ground; explode upward into a jump.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/fast_feet.png" alt="Fast Feet" loading="lazy" />
+        </div>
+        <h3>Fast Feet</h3>
+        <p>Rapidly alternating small steps in place.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Mobilitás</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/cat_cow.png" alt="Cat-Cow" loading="lazy" />
+        </div>
+        <h3>Cat-Cow</h3>
+        <p>Hands and knees, alternate arching and rounding back.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/child_s_pose.png" alt="Child's Pose" loading="lazy" />
+        </div>
+        <h3>Child's Pose</h3>
+        <p>Kneeling on floor, torso folded forward, arms extended, forehead resting on mat.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/downward_dog.png" alt="Downward Dog" loading="lazy" />
+        </div>
+        <h3>Downward Dog</h3>
+        <p>Inverted V shape, hands and feet on floor, hips raised high.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/hip_opener.png" alt="Hip Opener" loading="lazy" />
+        </div>
+        <h3>Hip Opener</h3>
+        <p>Knees wide, feet together, stretching hips.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/chest_opener.png" alt="Chest Opener" loading="lazy" />
+        </div>
+        <h3>Chest Opener</h3>
+        <p>Arms back, chest expanded.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/ankle_circles.png" alt="Ankle Circles" loading="lazy" />
+        </div>
+        <h3>Ankle Circles</h3>
+        <p>Rotate foot in circles.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/neck_rolls.png" alt="Neck Rolls" loading="lazy" />
+        </div>
+        <h3>Neck Rolls</h3>
+        <p>Slowly roll head in a full circular motion.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/shoulder_mobility.png" alt="Shoulder Mobility" loading="lazy" />
+        </div>
+        <h3>Shoulder Mobility</h3>
+        <p>Rotate arms in wide circles.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Nyújtás</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/hamstring_stretch.png" alt="Hamstring Stretch" loading="lazy" />
+        </div>
+        <h3>Hamstring Stretch</h3>
+        <p>Seated or standing, extend one leg forward, hinge at hips, keep back straight.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/quadriceps_stretch.png" alt="Quadriceps Stretch" loading="lazy" />
+        </div>
+        <h3>Quadriceps Stretch</h3>
+        <p>Standing, pull one heel toward glutes.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/calf_stretch.png" alt="Calf Stretch" loading="lazy" />
+        </div>
+        <h3>Calf Stretch</h3>
+        <p>Stand facing wall, one leg back, heel pressed down.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/glute_stretch.png" alt="Glute Stretch" loading="lazy" />
+        </div>
+        <h3>Glute Stretch</h3>
+        <p>Lying on back, pull one knee toward chest.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/hip_flexor_stretch.png" alt="Hip Flexor Stretch" loading="lazy" />
+        </div>
+        <h3>Hip Flexor Stretch</h3>
+        <p>Kneeling lunge, torso upright, hips pushed forward.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/chest_stretch.png" alt="Chest Stretch" loading="lazy" />
+        </div>
+        <h3>Chest Stretch</h3>
+        <p>Arms open, chest expanded.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/shoulder_stretch.png" alt="Shoulder Stretch" loading="lazy" />
+        </div>
+        <h3>Shoulder Stretch</h3>
+        <p>Arm pulled across chest.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/back_stretch.png" alt="Back Stretch" loading="lazy" />
+        </div>
+        <h3>Back Stretch</h3>
+        <p>Hands clasped forward, rounded back, chin to chest.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Egyensúly</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/single_leg_stand.png" alt="Single-leg Stand" loading="lazy" />
+        </div>
+        <h3>Single-leg Stand</h3>
+        <p>Stand on one leg.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/assisted_pistol_squat.png" alt="Assisted Pistol Squat" loading="lazy" />
+        </div>
+        <h3>Assisted Pistol Squat</h3>
+        <p>One-legged squat holding support.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/heel_to_toe_walk.png" alt="Heel-to-Toe Walk" loading="lazy" />
+        </div>
+        <h3>Heel-to-Toe Walk</h3>
+        <p>Walk in a straight line, placing the heel of one foot directly against the toes of the other.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/tree_pose.png" alt="Tree Pose" loading="lazy" />
+        </div>
+        <h3>Tree Pose</h3>
+        <p>Standing on one leg, foot against opposite inner thigh, hands in prayer position.</p>
+      </article>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Könnyített gyakorlatok időseknek vagy teljesen kezdőknek</h2>
+      <div class="grid">
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/chair_stand.png" alt="Chair Stand" loading="lazy" />
+        </div>
+        <h3>Chair Stand</h3>
+        <p>Stand up from a seated position.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/wall_push_up.png" alt="Wall Push-up" loading="lazy" />
+        </div>
+        <h3>Wall Push-up</h3>
+        <p>Hands on wall, push chest toward surface.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/seated_knee_raise.png" alt="Seated Knee Raise" loading="lazy" />
+        </div>
+        <h3>Seated Knee Raise</h3>
+        <p>Sit upright, lift knees toward chest, lower slowly.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/seated_arm_circles.png" alt="Seated Arm Circles" loading="lazy" />
+        </div>
+        <h3>Seated Arm Circles</h3>
+        <p>Rotate arms in small, controlled circles while seated.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/seated_torso_twist.png" alt="Seated Torso Twist" loading="lazy" />
+        </div>
+        <h3>Seated Torso Twist</h3>
+        <p>Rotate torso side to side while seated.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/march_in_place_2.png" alt="March in Place" loading="lazy" />
+        </div>
+        <h3>March in Place</h3>
+        <p>Standing, alternating lifting knees.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/toe_and_heel_raises.png" alt="Toe and Heel Raises" loading="lazy" />
+        </div>
+        <h3>Toe and Heel Raises</h3>
+        <p>Rise onto toes, then rock back onto heels.</p>
+      </article>
+<article class="card">
+        <div class="icon-wrap">
+          <img src="pictograms/seated_leg_extension.png" alt="Seated Leg Extension" loading="lazy" />
+        </div>
+        <h3>Seated Leg Extension</h3>
+        <p>Extend legs against resistance while seated.</p>
+      </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

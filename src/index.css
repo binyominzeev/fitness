@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Sora", "Avenir Next", "Segoe UI", sans-serif;
+  --color-brand-paper: #f8f7f2;
+  --color-brand-ink: #1f2933;
+  --color-brand-muted: #52606d;
+  --color-brand-line: #d8e1ea;
+  --color-brand-soft: #eef3ea;
+  --color-brand-teal: #0f766e;
+  --color-brand-coral: #d96b43;
+}
+
+:root {
+  font-family: var(--font-display);
+  color: var(--color-brand-ink);
+  background-color: var(--color-brand-paper);
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background:
+    radial-gradient(120% 60% at 10% -10%, rgba(15, 118, 110, 0.12), transparent 60%),
+    radial-gradient(100% 60% at 90% -20%, rgba(217, 107, 67, 0.12), transparent 60%),
+    var(--color-brand-paper);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main > section {
+  animation: rise-in 280ms ease-out;
+}
