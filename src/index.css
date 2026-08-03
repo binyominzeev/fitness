@@ -69,6 +69,17 @@ main > section {
     padding: 0.75rem;
   }
 
+  .playback-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .playback-visual-block {
+    min-width: 0;
+  }
+
   .playback-phase-label {
     margin-bottom: 0.25rem;
     letter-spacing: 0.15em;
@@ -82,8 +93,8 @@ main > section {
 
   .playback-exercise-image {
     margin-bottom: 0.5rem;
-    height: 6.5rem;
-    width: 6.5rem;
+    height: 5.75rem;
+    width: 5.75rem;
     padding: 0.5rem;
     border-radius: 0.875rem;
   }
@@ -95,8 +106,8 @@ main > section {
 
   .playback-upcoming-image {
     margin-bottom: 0.5rem;
-    height: 4.75rem;
-    width: 4.75rem;
+    height: 4.5rem;
+    width: 4.5rem;
     padding: 0.35rem;
   }
 
@@ -104,23 +115,23 @@ main > section {
     margin-bottom: 0.625rem;
     font-size: 0.8125rem;
     line-height: 1.25rem;
-    max-height: 2.5rem;
+    max-height: 2.35rem;
     overflow-y: auto;
   }
 
   .playback-ring-wrap {
-    margin-bottom: 0.625rem;
-    height: 8.75rem;
-    width: 8.75rem;
+    margin-bottom: 0;
+    height: 8rem;
+    width: 8rem;
   }
 
   .playback-ring-svg {
-    height: 8.75rem;
-    width: 8.75rem;
+    height: 8rem;
+    width: 8rem;
   }
 
   .playback-ring-time {
-    font-size: 2.25rem;
+    font-size: 2rem;
     line-height: 1;
   }
 
