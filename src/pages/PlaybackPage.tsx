@@ -24,6 +24,13 @@ function formatSeconds(totalSeconds: number): string {
   return String(Math.max(0, totalSeconds));
 }
 
+function formatClock(totalSeconds: number): string {
+  const safeSeconds = Math.max(0, totalSeconds);
+  const minutes = Math.floor(safeSeconds / 60);
+  const seconds = safeSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
 type PlaybackPageProps = {
   exercisesById: Record<string, Exercise>;
 };
@@ -50,6 +57,17 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
   const activeStepIndex = Math.min(stepIndex, Math.max(steps.length - 1, 0));
   const currentStep = steps[activeStepIndex];
   const currentExercise = currentStep ? exercisesById[currentStep.exerciseId] : undefined;
+  const nextWorkStep = useMemo(() => {
+    for (let index = activeStepIndex + 1; index < steps.length; index += 1) {
+      if (steps[index].phase === "work") {
+        return steps[index];
+      }
+    }
+
+    return undefined;
+  }, [activeStepIndex, steps]);
+  const upcomingExercise = nextWorkStep ? exercisesById[nextWorkStep.exerciseId] : undefined;
+  const isRestPhase = currentStep?.phase === "rest";
   const currentStepDurationMs = currentStep ? currentStep.durationSeconds * 1000 : 0;
   const currentStepStartMs = activeStepIndex === 0 ? 0 : (cumulativeStepEndsMs[activeStepIndex - 1] ?? 0);
   const clampedRemainingMs = clamp(remainingMs, 0, currentStepDurationMs);
@@ -196,13 +214,30 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     <section className="space-y-4">
       <article className="rounded-3xl border border-brand-line bg-white p-5 text-center shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
         <p className="mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">{phaseLabel}</p>
-        <h2 className="mb-4 font-display text-2xl font-semibold">{currentExercise?.exerciseNameHu}</h2>
+        {!isRestPhase && (
+          <>
+            <h2 className="mb-2 font-display text-2xl font-semibold">{currentExercise?.exerciseNameHu}</h2>
+            <img
+              src={currentExercise?.imageUrl}
+              alt={currentExercise?.exerciseNameHu}
+              className="mx-auto mb-3 h-44 w-44 rounded-2xl bg-brand-soft p-4 object-contain"
+            />
+            <p className="mx-auto mb-4 max-w-xl text-sm leading-relaxed text-brand-muted">{currentExercise?.description}</p>
+          </>
+        )}
 
-        <img
-          src={currentExercise?.imageUrl}
-          alt={currentExercise?.exerciseNameHu}
-          className="mx-auto mb-4 h-44 w-44 rounded-2xl bg-brand-soft p-4 object-contain"
-        />
+        {isRestPhase && (
+          <div className="mx-auto mb-4 max-w-xl rounded-2xl border border-dashed border-brand-line bg-brand-soft/55 px-4 py-3">
+            <p className="mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-muted">Upcoming</p>
+            <h2 className="mb-2 font-mono text-2xl font-semibold leading-tight text-brand-ink">{upcomingExercise?.exerciseNameHu}</h2>
+            <img
+              src={upcomingExercise?.imageUrl}
+              alt={upcomingExercise?.exerciseNameHu}
+              className="mx-auto mb-2 h-28 w-28 rounded-xl bg-white p-2 object-contain"
+            />
+            <p className="text-sm leading-relaxed text-brand-muted">{upcomingExercise?.description}</p>
+          </div>
+        )}
 
         <div className="mx-auto mb-4 grid h-[210px] w-[210px] place-items-center">
           <svg className="col-start-1 row-start-1 h-[210px] w-[210px] -rotate-90" viewBox="0 0 210 210" role="img" aria-label="Aktuális szakasz időzítő">
@@ -227,7 +262,7 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
           <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-brand-muted">
             <span>Teljes idő</span>
             <span>
-              {formatSeconds(elapsedTotalSeconds)} / {formatSeconds(totalDurationSeconds)} mp
+              {formatClock(elapsedTotalSeconds)} / {formatClock(totalDurationSeconds)}
             </span>
           </div>
           <input
