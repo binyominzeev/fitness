@@ -2,7 +2,7 @@ import type { Exercise } from "../types";
 
 type ExerciseCardProps = {
   exercise: Exercise;
-  onAdd: (exerciseId: string) => void;
+  onAdd: (exercise: Exercise) => void;
 };
 
 export function ExerciseCard({ exercise, onAdd }: ExerciseCardProps) {
@@ -23,10 +23,10 @@ export function ExerciseCard({ exercise, onAdd }: ExerciseCardProps) {
 
         <button
           type="button"
-          onClick={() => onAdd(exercise.id)}
+          onClick={() => onAdd(exercise)}
           className="rounded-xl bg-brand-teal px-3 py-2 text-sm font-semibold text-white"
         >
-          Hozzaad
+          Hozzáad
         </button>
       </div>
     </article>

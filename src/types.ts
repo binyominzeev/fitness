@@ -15,6 +15,10 @@ export type WorkoutItem = {
   restSeconds: number;
 };
 
+export type BulkCopyField = "workSeconds" | "restSeconds";
+
+export type BulkCopyScope = "above" | "below" | "allAbove" | "allBelow" | "all";
+
 export type WorkoutStep = {
   id: string;
   itemId: string;

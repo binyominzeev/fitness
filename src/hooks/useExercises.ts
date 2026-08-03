@@ -29,7 +29,7 @@ export function useExercises(query: string, category: string) {
         if (!isActive) {
           return;
         }
-        setState({ exercises: [], isLoading: false, error: "A gyakorlatok betoltese sikertelen." });
+        setState({ exercises: [], isLoading: false, error: "A gyakorlatok betöltése sikertelen." });
       }
     }
 

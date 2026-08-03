@@ -11,7 +11,7 @@ type RawExercise = {
 export async function loadExercises(): Promise<Exercise[]> {
   const response = await fetch("/exercise_database.json", { cache: "force-cache" });
   if (!response.ok) {
-    throw new Error("Nem sikerult betolteni a gyakorlat adatbazist.");
+    throw new Error("Nem sikerült betölteni a gyakorlat-adatbázist.");
   }
 
   const records = (await response.json()) as RawExercise[];
@@ -29,6 +29,26 @@ export async function loadExercises(): Promise<Exercise[]> {
 
 export function extractCategories(exercises: Exercise[]): string[] {
   return [...new Set(exercises.map((exercise) => exercise.category))];
+}
+
+export function groupExercisesByCategory(
+  exercises: Exercise[],
+): Array<{ category: string; exercises: Exercise[] }> {
+  const groupedExercises = exercises.reduce<Record<string, Exercise[]>>((accumulator, exercise) => {
+    const category = exercise.category;
+
+    if (!accumulator[category]) {
+      accumulator[category] = [];
+    }
+
+    accumulator[category].push(exercise);
+    return accumulator;
+  }, {});
+
+  return Object.entries(groupedExercises).map(([category, categoryExercises]) => ({
+    category,
+    exercises: categoryExercises,
+  }));
 }
 
 export function filterExercises(exercises: Exercise[], query: string, category: string): Exercise[] {

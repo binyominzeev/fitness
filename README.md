@@ -1,6 +1,6 @@
-# Intervallum Edzes PWA (MVP)
+# Intervallum Edzés PWA (MVP)
 
-Mobil-first, offline-kepes Progressive Web App intervallumos edzestervek osszeallitasara es lejatszasara.
+Mobil-first, offline-képes Progressive Web App intervallumos edzéstervek összeállítására és lejátszására.
 
 ## Stack
 
@@ -11,40 +11,40 @@ Mobil-first, offline-kepes Progressive Web App intervallumos edzestervek osszeal
 - React Router
 - vite-plugin-pwa (Workbox)
 
-## Mi keszult el az MVP-ben
+## Mi készült el az MVP-ben
 
 - `Gyakorlatok` oldal
-  - piktogram + magyar nev + kategoria lista
-  - kereses
-  - kategoria szuro
-  - gyakorlat hozzaadasa az edzestervhez
-- `Edzesterv` oldal
-  - elemek listaja
-  - munkaido es pihenoido szerkesztese
-  - sorrend modositas (fel/le)
-  - torles es teljes terv torlese
-  - tartos mentes `localStorage`-ba
-- `Lejatszas` oldal
+  - piktogram + magyar név + kategória lista
+  - keresés
+  - kategória szűrő
+  - gyakorlat hozzáadása az edzéstervhez
+- `Edzésterv` oldal
+  - elemek listája
+  - munkaidő és pihenőidő szerkesztése
+  - sorrend módosítás (fel/le)
+  - törlés és teljes terv törlése
+  - tartós mentés `localStorage`-ba
+- `Lejátszás` oldal
   - nagy piktogram
   - gyakorlat neve
-  - visszaszamlalo
-  - munka/piheno allapot
-  - automatikus tovabblepes
-  - az utolso gyakorlat utan nincs piheno lepes
+  - visszaszámláló
+  - munka/pihenő állapot
+  - automatikus továbblépés
+  - az utolsó gyakorlat után nincs pihenő lépés
 - PWA/offline
   - manifest + service worker
   - app shell precache
   - adatok (`exercise_database.json`) cache
   - piktogramok runtime cache
 
-## Fontos adatforrasok
+## Fontos adatforrások
 
-- `public/exercise_database.json` - gyakorlat adatbazis
+- `public/exercise_database.json` - gyakorlat-adatbázis
 - `public/pictograms/` - piktogramok (PNG)
 
-Megjegyzes: a jelenlegi adatkeszlet PNG piktogramokat tartalmaz, SVG jelenleg nincs a forrasban.
+Megjegyzés: a jelenlegi adatkészlet PNG piktogramokat tartalmaz, SVG jelenleg nincs a forrásban.
 
-## Fejlesztoi inditas
+## Fejlesztői indítás
 
 ```bash
 npm install
@@ -61,22 +61,22 @@ npm run build
 npm run preview
 ```
 
-## PWA offline ellenorzes (gyors)
+## PWA offline ellenőrzés (gyors)
 
 1. Nyisd meg az appot browserben.
-2. Frissits egyszer, hogy a service worker telepuljon.
-3. Kapcsold le a halozatot (DevTools > Network > Offline).
-4. Toltsd ujra az oldalt: az appnak tovabbra is be kell jonnie.
+2. Frissíts egyszer, hogy a service worker települjön.
+3. Kapcsold le a hálózatot (DevTools > Network > Offline).
+4. Töltsd újra az oldalt: az appnak továbbra is be kell jönnie.
 
-## Projekt struktura roviden
+## Projekt struktúra röviden
 
 - `src/` - React alkalmazas
 - `public/` - statikus assetek a PWA-hoz
-- `tools/python-pipeline/` - legacy adat/piktogram generalo pipeline
+- `tools/python-pipeline/` - legacy adat/piktogram generáló pipeline
 
 ## Legacy pipeline
 
-A korabbi Python-alapu generalo script-ek atkerultek ide:
+A korábbi Python-alapú generáló script-ek átkerültek ide:
 
 - `tools/python-pipeline/build_exercise_database.py`
 - `tools/python-pipeline/build_exercise_html.py`

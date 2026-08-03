@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       manifest: {
-        name: "Intervallum Edzes",
+        name: "Intervallum Edzés",
         short_name: "Intervallum",
-        description: "Mobilbarat intervallumos edzestervezo es lejatszo.",
+        description: "Mobilbarát intervallumos edzéstervező és lejátszó.",
         theme_color: "#0f766e",
         background_color: "#f8f7f2",
         display: "standalone",

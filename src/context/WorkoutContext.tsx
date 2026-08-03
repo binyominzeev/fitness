@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import type { ReactNode } from "react";
 import { persistPlan, loadPersistedPlan } from "../lib/storage";
 import { clampSeconds } from "../lib/workout";
-import type { WorkoutItem } from "../types";
+import type { BulkCopyField, BulkCopyScope, WorkoutItem } from "../types";
 
 type WorkoutState = {
   items: WorkoutItem[];
@@ -12,7 +12,9 @@ type WorkoutAction =
   | { type: "add"; exerciseId: string }
   | { type: "remove"; itemId: string }
   | { type: "update"; itemId: string; patch: Partial<Pick<WorkoutItem, "workSeconds" | "restSeconds">> }
+  | { type: "bulkCopy"; sourceItemId: string; field: BulkCopyField; scope: BulkCopyScope }
   | { type: "move"; itemId: string; direction: "up" | "down" }
+  | { type: "replace"; items: WorkoutItem[] }
   | { type: "clear" };
 
 type WorkoutContextValue = {
@@ -20,7 +22,9 @@ type WorkoutContextValue = {
   addItem: (exerciseId: string) => void;
   removeItem: (itemId: string) => void;
   updateItem: (itemId: string, patch: Partial<Pick<WorkoutItem, "workSeconds" | "restSeconds">>) => void;
+  bulkCopyItemValue: (sourceItemId: string, field: BulkCopyField, scope: BulkCopyScope) => void;
   moveItem: (itemId: string, direction: "up" | "down") => void;
+  replaceItems: (items: WorkoutItem[]) => void;
   clearAll: () => void;
 };
 
@@ -33,6 +37,23 @@ function createItem(exerciseId: string): WorkoutItem {
     workSeconds: 30,
     restSeconds: 15,
   };
+}
+
+function getTargetIndexes(sourceIndex: number, total: number, scope: BulkCopyScope): number[] {
+  switch (scope) {
+    case "above":
+      return sourceIndex > 0 ? [sourceIndex - 1] : [];
+    case "below":
+      return sourceIndex < total - 1 ? [sourceIndex + 1] : [];
+    case "allAbove":
+      return Array.from({ length: sourceIndex }, (_, index) => index);
+    case "allBelow":
+      return Array.from({ length: total - sourceIndex - 1 }, (_, offset) => sourceIndex + offset + 1);
+    case "all":
+      return Array.from({ length: total }, (_, index) => index).filter((index) => index !== sourceIndex);
+    default:
+      return [];
+  }
 }
 
 function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
@@ -70,6 +91,49 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
       persistPlan(next.items);
       return next;
     }
+    case "bulkCopy": {
+      const sourceIndex = state.items.findIndex((item) => item.id === action.sourceItemId);
+      if (sourceIndex === -1) {
+        return state;
+      }
+
+      const sourceValue = clampSeconds(state.items[sourceIndex][action.field]);
+      const lastIndex = state.items.length - 1;
+      const targetIndexes = getTargetIndexes(sourceIndex, state.items.length, action.scope);
+      if (targetIndexes.length === 0) {
+        return state;
+      }
+      const targetIndexSet = new Set(targetIndexes);
+
+      let didChange = false;
+      const nextItems = state.items.map((item, index) => {
+        if (!targetIndexSet.has(index)) {
+          return item;
+        }
+
+        if (action.field === "restSeconds" && index === lastIndex) {
+          return item;
+        }
+
+        if (item[action.field] === sourceValue) {
+          return item;
+        }
+
+        didChange = true;
+        return {
+          ...item,
+          [action.field]: sourceValue,
+        };
+      });
+
+      if (!didChange) {
+        return state;
+      }
+
+      const next = { items: nextItems };
+      persistPlan(next.items);
+      return next;
+    }
     case "move": {
       const currentIndex = state.items.findIndex((item) => item.id === action.itemId);
       if (currentIndex === -1) {
@@ -86,6 +150,11 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
       nextItems.splice(targetIndex, 0, item);
 
       const next = { items: nextItems };
+      persistPlan(next.items);
+      return next;
+    }
+    case "replace": {
+      const next = { items: action.items };
       persistPlan(next.items);
       return next;
     }
@@ -109,7 +178,9 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
       addItem: (exerciseId) => dispatch({ type: "add", exerciseId }),
       removeItem: (itemId) => dispatch({ type: "remove", itemId }),
       updateItem: (itemId, patch) => dispatch({ type: "update", itemId, patch }),
+      bulkCopyItemValue: (sourceItemId, field, scope) => dispatch({ type: "bulkCopy", sourceItemId, field, scope }),
       moveItem: (itemId, direction) => dispatch({ type: "move", itemId, direction }),
+      replaceItems: (items) => dispatch({ type: "replace", items }),
       clearAll: () => dispatch({ type: "clear" }),
     }),
     [state.items],
@@ -121,7 +192,7 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
 export function useWorkoutPlan(): WorkoutContextValue {
   const context = useContext(WorkoutContext);
   if (!context) {
-    throw new Error("useWorkoutPlan csak WorkoutProvider alatt hasznalhato.");
+    throw new Error("useWorkoutPlan csak WorkoutProvider alatt használható.");
   }
 
   return context;

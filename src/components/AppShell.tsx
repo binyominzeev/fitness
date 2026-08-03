@@ -1,17 +1,20 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useWorkoutPlan } from "../context/WorkoutContext";
 
 const navItems = [
   { to: "/", label: "Gyakorlatok" },
-  { to: "/terv", label: "Edzesterv" },
-  { to: "/lejatszas", label: "Lejatszas" },
+  { to: "/terv", label: "Edzésterv", withCount: true },
+  { to: "/lejatszas", label: "Lejátszás" },
 ];
 
 export function AppShell() {
+  const { items } = useWorkoutPlan();
+
   return (
     <div className="min-h-screen bg-brand-paper text-brand-ink">
       <header className="sticky top-0 z-20 border-b border-brand-line bg-brand-paper/95 px-4 py-3 backdrop-blur-sm">
         <p className="text-xs uppercase tracking-[0.2em] text-brand-muted">Interval Trainer</p>
-        <h1 className="font-display text-xl font-semibold">Intervallum Edzes MVP</h1>
+        <h1 className="font-display text-xl font-semibold">Intervallum Edzés MVP</h1>
       </header>
 
       <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-4">
@@ -32,7 +35,7 @@ export function AppShell() {
                   }`
                 }
               >
-                {item.label}
+                {item.withCount ? `${item.label} (${items.length})` : item.label}
               </NavLink>
             </li>
           ))}
