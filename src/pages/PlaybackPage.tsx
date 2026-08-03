@@ -211,36 +211,36 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
   }
 
   return (
-    <section className="space-y-4">
-      <article className="rounded-3xl border border-brand-line bg-white p-5 text-center shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
-        <p className="mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">{phaseLabel}</p>
+    <section className="playback-page space-y-4">
+      <article className="playback-card rounded-3xl border border-brand-line bg-white p-5 text-center shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
+        <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">{phaseLabel}</p>
         {!isRestPhase && (
           <>
-            <h2 className="mb-2 font-display text-2xl font-semibold">{currentExercise?.exerciseNameHu}</h2>
+            <h2 className="playback-title mb-2 font-display text-2xl font-semibold">{currentExercise?.exerciseNameHu}</h2>
             <img
               src={currentExercise?.imageUrl}
               alt={currentExercise?.exerciseNameHu}
-              className="mx-auto mb-3 h-44 w-44 rounded-2xl bg-brand-soft p-4 object-contain"
+              className="playback-exercise-image mx-auto mb-3 h-44 w-44 rounded-2xl bg-brand-soft p-4 object-contain"
             />
-            <p className="mx-auto mb-4 max-w-xl text-sm leading-relaxed text-brand-muted">{currentExercise?.description}</p>
+            <p className="playback-description mx-auto mb-4 max-w-xl text-sm leading-relaxed text-brand-muted">{currentExercise?.description}</p>
           </>
         )}
 
         {isRestPhase && (
-          <div className="mx-auto mb-4 max-w-xl rounded-2xl border border-dashed border-brand-line bg-brand-soft/55 px-4 py-3">
+          <div className="playback-upcoming mx-auto mb-4 max-w-xl rounded-2xl border border-dashed border-brand-line bg-brand-soft/55 px-4 py-3">
             <p className="mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-muted">Upcoming</p>
-            <h2 className="mb-2 font-mono text-2xl font-semibold leading-tight text-brand-ink">{upcomingExercise?.exerciseNameHu}</h2>
+            <h2 className="playback-title mb-2 font-mono text-2xl font-semibold leading-tight text-brand-ink">{upcomingExercise?.exerciseNameHu}</h2>
             <img
               src={upcomingExercise?.imageUrl}
               alt={upcomingExercise?.exerciseNameHu}
-              className="mx-auto mb-2 h-28 w-28 rounded-xl bg-white p-2 object-contain"
+              className="playback-upcoming-image mx-auto mb-2 h-28 w-28 rounded-xl bg-white p-2 object-contain"
             />
-            <p className="text-sm leading-relaxed text-brand-muted">{upcomingExercise?.description}</p>
+            <p className="playback-description text-sm leading-relaxed text-brand-muted">{upcomingExercise?.description}</p>
           </div>
         )}
 
-        <div className="mx-auto mb-4 grid h-[210px] w-[210px] place-items-center">
-          <svg className="col-start-1 row-start-1 h-[210px] w-[210px] -rotate-90" viewBox="0 0 210 210" role="img" aria-label="Aktuális szakasz időzítő">
+        <div className="playback-ring-wrap mx-auto mb-4 grid h-[210px] w-[210px] place-items-center">
+          <svg className="playback-ring-svg col-start-1 row-start-1 h-[210px] w-[210px] -rotate-90" viewBox="0 0 210 210" role="img" aria-label="Aktuális szakasz időzítő">
             <circle cx="105" cy="105" r={PHASE_RING_RADIUS} fill="none" stroke="rgba(19, 66, 78, 0.12)" strokeWidth="10" />
             <circle
               cx="105"
@@ -255,10 +255,10 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
               style={{ transition: "stroke-dashoffset 0.1s linear, stroke 0.2s ease" }}
             />
           </svg>
-          <p className="col-start-1 row-start-1 font-display text-5xl font-semibold tabular-nums">{formatSeconds(remainingSeconds)}</p>
+          <p className="playback-ring-time col-start-1 row-start-1 font-display text-5xl font-semibold tabular-nums">{formatSeconds(remainingSeconds)}</p>
         </div>
 
-        <div className="mt-2 space-y-2 text-left">
+        <div className="playback-timeline mt-2 space-y-2 text-left">
           <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-brand-muted">
             <span>Teljes idő</span>
             <span>
@@ -289,7 +289,7 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
         </p>
       </article>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="playback-controls grid grid-cols-3 gap-2">
         <button type="button" onClick={startOrResume} className="rounded-xl bg-brand-teal px-3 py-3 font-semibold text-white">
           {playbackState === "running" ? "Fut" : playbackState === "paused" ? "Folytatás" : "Indítás"}
         </button>
