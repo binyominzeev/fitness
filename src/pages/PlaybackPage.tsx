@@ -213,9 +213,9 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
   return (
     <section className="playback-page space-y-4">
       <article className="playback-card rounded-3xl border border-brand-line bg-white p-5 text-center shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
-        <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">{phaseLabel}</p>
         <div className="playback-main">
           <div className="playback-visual-block">
+            <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">{phaseLabel}</p>
             {!isRestPhase && (
               <>
                 <h2 className="playback-title mb-2 font-display text-2xl font-semibold">{currentExercise?.exerciseNameHu}</h2>
