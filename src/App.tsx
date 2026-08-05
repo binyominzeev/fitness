@@ -6,6 +6,7 @@ import { useExercises } from "./hooks/useExercises";
 import { ExercisesPage } from "./pages/ExercisesPage";
 import { PlaybackPage } from "./pages/PlaybackPage";
 import { PlanPage } from "./pages/PlanPage";
+import { WorkoutWizardPage } from "./pages/WorkoutWizardPage";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -33,6 +34,7 @@ function App() {
             }
           />
           <Route path="/terv" element={<PlanPage exercisesById={catalog.exercisesById} />} />
+          <Route path="/terv/uj" element={<WorkoutWizardPage exercises={catalog.exercises} />} />
           <Route path="/lejatszas" element={<PlaybackPage exercisesById={catalog.exercisesById} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

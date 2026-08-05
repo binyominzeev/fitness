@@ -28,3 +28,28 @@ export type WorkoutStep = {
 };
 
 export type WorkoutPlaybackState = "idle" | "running" | "paused" | "finished";
+
+export type WizardGoal = "strength" | "fatloss" | "mobility" | "desk" | "conditioning";
+
+export type WizardTimeBudget = "5" | "10" | "15" | "20plus";
+
+export type WizardFrequency = "1" | "2" | "3" | "almostDaily";
+
+export type WizardLevel = "starter" | "restart" | "sometimes" | "regular";
+
+export type WizardAvoidance = "pushup" | "jumping" | "kneeLoad" | "abs" | "wristLoad";
+
+export type WizardLocation = "home" | "gym" | "outdoor";
+
+export type WizardPersonality = "push" | "habit" | "variety";
+
+export type WizardAnswers = {
+  goal: WizardGoal;
+  timeBudget: WizardTimeBudget;
+  frequency: WizardFrequency;
+  level: WizardLevel;
+  avoidances: WizardAvoidance[];
+  location: WizardLocation;
+  personality: WizardPersonality;
+  note: string;
+};

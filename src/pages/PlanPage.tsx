@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { PlanItemEditor } from "../components/PlanItemEditor";
 import { useWorkoutPlan } from "../context/WorkoutContext";
 import { exportPlanToJson, importPlanFromJson } from "../lib/storage";
@@ -9,6 +10,7 @@ type PlanPageProps = {
 };
 
 export function PlanPage({ exercisesById }: PlanPageProps) {
+  const navigate = useNavigate();
   const { items, updateItem, bulkCopyItemValue, moveItem, removeItem, clearAll, replaceItems } = useWorkoutPlan();
   const [feedback, setFeedback] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +52,13 @@ export function PlanPage({ exercisesById }: PlanPageProps) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-brand-muted">Elemek száma: {items.length}</p>
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => navigate("/terv/uj")}
+              className="rounded-xl bg-brand-teal px-3 py-2 text-sm font-semibold text-white"
+            >
+              Varázsló indítása
+            </button>
             <button
               type="button"
               onClick={handleExport}
