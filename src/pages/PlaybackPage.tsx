@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { PlaybackOverview } from "../components/PlaybackOverview";
 import { useWorkoutPlan } from "../context/WorkoutContext";
 import { buildWorkoutSteps } from "../lib/workout";
 import type { Exercise, WorkoutPlaybackState } from "../types";
@@ -212,7 +213,9 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
 
   return (
     <section className="playback-page space-y-4">
-      <article className="playback-card rounded-3xl border border-brand-line bg-white p-5 text-center shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
+      <div className="playback-layout">
+        <div className="playback-primary space-y-4">
+          <article className="playback-card rounded-3xl border border-brand-line bg-white p-5 text-center shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
         <div className="playback-main">
           <div className="playback-visual-block">
             <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">{phaseLabel}</p>
@@ -291,18 +294,22 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
         <p className="mt-2 text-sm text-brand-muted">
           Lépés {activeStepIndex + 1} / {steps.length}
         </p>
-      </article>
+          </article>
 
-      <div className="playback-controls grid grid-cols-3 gap-2">
-        <button type="button" onClick={startOrResume} className="rounded-xl bg-brand-teal px-3 py-3 font-semibold text-white">
-          {playbackState === "running" ? "Fut" : playbackState === "paused" ? "Folytatás" : "Indítás"}
-        </button>
-        <button type="button" onClick={pause} className="rounded-xl border border-brand-line bg-white px-3 py-3 font-semibold">
-          Szünet
-        </button>
-        <button type="button" onClick={reset} className="rounded-xl border border-brand-line bg-white px-3 py-3 font-semibold">
-          Újra
-        </button>
+          <div className="playback-controls grid grid-cols-3 gap-2">
+            <button type="button" onClick={startOrResume} className="rounded-xl bg-brand-teal px-3 py-3 font-semibold text-white">
+              {playbackState === "running" ? "Fut" : playbackState === "paused" ? "Folytatás" : "Indítás"}
+            </button>
+            <button type="button" onClick={pause} className="rounded-xl border border-brand-line bg-white px-3 py-3 font-semibold">
+              Szünet
+            </button>
+            <button type="button" onClick={reset} className="rounded-xl border border-brand-line bg-white px-3 py-3 font-semibold">
+              Újra
+            </button>
+          </div>
+        </div>
+
+        <PlaybackOverview steps={steps} activeStepIndex={activeStepIndex} exercisesById={exercisesById} />
       </div>
     </section>
   );
