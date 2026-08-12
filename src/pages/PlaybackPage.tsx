@@ -141,6 +141,11 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     }
   }
 
+  function seekToStep(stepIndex: number) {
+    const stepStartMs = stepIndex === 0 ? 0 : (cumulativeStepEndsMs[stepIndex - 1] ?? 0);
+    seekToElapsedMs(stepStartMs);
+  }
+
   function startOrResume() {
     if (steps.length === 0) {
       return;
@@ -309,7 +314,7 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
           </div>
         </div>
 
-        <PlaybackOverview steps={steps} activeStepIndex={activeStepIndex} exercisesById={exercisesById} />
+        <PlaybackOverview steps={steps} activeStepIndex={activeStepIndex} exercisesById={exercisesById} onSelectStep={seekToStep} />
       </div>
     </section>
   );

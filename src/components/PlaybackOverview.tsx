@@ -5,6 +5,7 @@ type PlaybackOverviewProps = {
   steps: WorkoutStep[];
   activeStepIndex: number;
   exercisesById: Record<string, Exercise>;
+  onSelectStep: (stepIndex: number) => void;
 };
 
 type OverviewGroup = {
@@ -27,7 +28,7 @@ function formatDuration(seconds: number): string {
   return `${seconds} mp`;
 }
 
-export function PlaybackOverview({ steps, activeStepIndex, exercisesById }: PlaybackOverviewProps) {
+export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSelectStep }: PlaybackOverviewProps) {
   const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
   const groups = groupStepsByItem(steps);
   const activeStep = steps[activeStepIndex];
@@ -51,6 +52,7 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById }: Play
           const isActiveGroup = groupIndex === activeGroupIndex;
           const workStep = group.steps.find((step) => step.phase === "work");
           const restStep = group.steps.find((step) => step.phase === "rest");
+          const workStepIndex = steps.indexOf(workStep ?? group.steps[0]);
 
           return (
             <li
@@ -58,30 +60,37 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById }: Play
               ref={(element) => {
                 rowRefs.current[groupIndex] = element;
               }}
-              className={`rounded-2xl border p-3 transition-colors ${
-                isActiveGroup ? "border-brand-teal bg-brand-soft" : "border-brand-line bg-brand-paper/60"
-              }`}
+              className="list-none"
             >
-              <div className="flex items-center gap-2">
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-ink text-xs font-semibold text-brand-paper">
-                  {groupIndex + 1}
-                </span>
-                <p className="min-w-0 flex-1 truncate text-sm font-semibold">
-                  {exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"}
-                </p>
-                {isActiveGroup && <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.1em] text-brand-teal">Most</span>}
-              </div>
+              <button
+                type="button"
+                onClick={() => onSelectStep(workStepIndex)}
+                className={`w-full rounded-2xl border p-3 text-left transition-colors hover:border-brand-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal ${
+                  isActiveGroup ? "border-brand-teal bg-brand-soft" : "border-brand-line bg-brand-paper/60"
+                }`}
+                aria-label={`${exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"} megnyitása`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-ink text-xs font-semibold text-brand-paper">
+                    {groupIndex + 1}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+                    {exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"}
+                  </span>
+                  {isActiveGroup && <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.1em] text-brand-teal">Most</span>}
+                </div>
 
-              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                <div className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "work" ? "bg-green-100 text-green-800" : "bg-white/70 text-brand-muted"}`}>
-                  <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Munka</span>
-                  <span className="font-mono font-semibold">{workStep ? formatDuration(workStep.durationSeconds) : "-"}</span>
+                <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                  <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "work" ? "bg-green-100 text-green-800" : "bg-white/70 text-brand-muted"}`}>
+                    <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Munka</span>
+                    <span className="font-mono font-semibold">{workStep ? formatDuration(workStep.durationSeconds) : "-"}</span>
+                  </span>
+                  <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "rest" ? "bg-blue-100 text-blue-800" : "bg-white/70 text-brand-muted"}`}>
+                    <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Pihenő</span>
+                    <span className="font-mono font-semibold">{restStep ? formatDuration(restStep.durationSeconds) : "-"}</span>
+                  </span>
                 </div>
-                <div className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "rest" ? "bg-blue-100 text-blue-800" : "bg-white/70 text-brand-muted"}`}>
-                  <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Pihenő</span>
-                  <span className="font-mono font-semibold">{restStep ? formatDuration(restStep.durationSeconds) : "-"}</span>
-                </div>
-              </div>
+              </button>
             </li>
           );
         })}
