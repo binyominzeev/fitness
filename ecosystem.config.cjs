@@ -15,8 +15,9 @@ module.exports = {
     },
     {
       name: "fitness-web",
-      script: "npm",
-      args: `run preview -- --port ${WEB_PORT} --host 0.0.0.0`,
+      // közvetlenül a vite binárist hívjuk, nem "npm run"-on keresztül, hogy ne fusson felesleges extra Node-processz
+      script: "node_modules/vite/bin/vite.js",
+      args: `preview --port ${WEB_PORT} --host 0.0.0.0`,
       env: {
         AI_SERVER_PORT: API_PORT,
       },
