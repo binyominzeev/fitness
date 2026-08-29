@@ -53,3 +53,46 @@ export type WizardAnswers = {
   personality: WizardPersonality;
   note: string;
 };
+
+export type AICoachProfile = {
+  displayName: string;
+  goal: string;
+  level: string;
+  weeklyFrequency: string;
+  availableMinutes: string;
+  location: string;
+  limitations: string;
+  notes: string;
+};
+
+export type AIMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+};
+
+export type AICoachMemory = {
+  summary: string;
+  updatedAt: string;
+};
+
+export type WorkoutLogEntry = {
+  id: string;
+  completedAt: string;
+  durationSeconds: number;
+  completed: boolean;
+  exerciseCount: number;
+  difficulty?: number;
+  note?: string;
+};
+
+export type AIPlanProposal = {
+  title: string;
+  rationale: string;
+  items: Array<{
+    exerciseId: string;
+    workSeconds: number;
+    restSeconds: number;
+  }>;
+};

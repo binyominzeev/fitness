@@ -27,3 +27,4 @@ dist-ssr
 .env
 .env.*
 tools/python-pipeline/secrets_local.py
+.vercel

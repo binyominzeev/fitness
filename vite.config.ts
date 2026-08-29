@@ -3,7 +3,19 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vite";
 
+const apiProxy = {
+  "/api": {
+    target: `http://localhost:${process.env.AI_SERVER_PORT || 8787}`,
+  },
+};
+
 export default defineConfig({
+  server: {
+    proxy: apiProxy,
+  },
+  preview: {
+    proxy: apiProxy,
+  },
   plugins: [
     react(),
     tailwindcss(),

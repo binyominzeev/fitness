@@ -4,6 +4,7 @@ import { useWorkoutPlan } from "../context/WorkoutContext";
 const navItems = [
   { to: "/", label: "Gyakorlatok" },
   { to: "/terv", label: "Edzésterv", withCount: true },
+  { to: "/ai-edzo", label: "AI edző" },
   { to: "/lejatszas", label: "Lejátszás" },
 ];
 
@@ -22,7 +23,7 @@ export function AppShell() {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-brand-line bg-brand-paper/95 px-2 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-sm">
-        <ul className="mx-auto grid max-w-3xl grid-cols-3 gap-2">
+        <ul className="mx-auto grid max-w-3xl grid-cols-4 gap-2">
           {navItems.map((item) => (
             <li key={item.to}>
               <NavLink
