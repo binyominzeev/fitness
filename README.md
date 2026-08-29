@@ -83,21 +83,25 @@ npm install
 npm run deploy
 ```
 
-A `npm run deploy` legenerálja a buildet, majd a [ecosystem.config.cjs](ecosystem.config.cjs) alapján elindítja (vagy nulla-leállásos újratölti) mindkét pm2 folyamatot egyszerre:
+A `npm run deploy` legenerálja a buildet, majd a [ecosystem.config.cjs](ecosystem.config.cjs) alapján elindítja (vagy nulla-leállásos újratölti) az egyetlen `fitness` pm2 folyamatot. Ez a folyamat maga a `server/index.mjs`: egyszerre szolgálja ki a buildelt statikus frontendet (`dist/`, SPA fallback `index.html`-re) ÉS az `/api/ai/chat` végpontot, tehát nincs szükség külön Vite-folyamatra vagy Vite futásidejű overheadre éles környezetben.
 
-- `fitness-api` – a saját Node API-szerver (`server/index.mjs`), az `OPENAI_API_KEY`-t a `.env` fájlból olvassa
-- `fitness-web` – a buildelt frontend kiszolgálása `vite preview`-val, amely a `/api` hívásokat a `fitness-api` folyamatra proxyzza
-
-Alapértelmezett portok: frontend `4173`, API `8787` (mindkettő felülírható `WEB_PORT` / `PORT` környezeti változóval). Első indítás után érdemes elmenteni a pm2 állapotot, hogy szerver-újraindítás után is induljon:
+Alapértelmezett port: `8787` (felülírható `PORT` környezeti változóval). Első indítás után érdemes elmenteni a pm2 állapotot, hogy szerver-újraindítás után is induljon:
 
 ```bash
 pm2 save
 pm2 startup
 ```
 
-Naplók: `pm2 logs fitness-api` és `pm2 logs fitness-web`.
+Naplók: `pm2 logs fitness`.
 
-Ha a `4173`/`8787` portokat nem szeretnéd közvetlenül kitenni, tegyél elé egy nginx reverse proxyt (TLS-terminálás, domain-kötés céljából) a `fitness-web` portjára; külön nginx statikus fájlkiszolgálás ehhez a beállításhoz már nem szükséges, mert azt a `vite preview` végzi.
+Ha korábban a régi, kétprocesszes (`fitness-api` + `fitness-web`) elrendezést használtad, előbb töröld a maradék bejegyzéseket, mert a `startOrReload` nem szünteti meg automatikusan a már nem szereplő appokat:
+
+```bash
+pm2 delete fitness-api fitness-web
+npm run deploy
+```
+
+Ha a `8787` portot nem szeretnéd közvetlenül kitenni, tegyél elé egy nginx reverse proxyt (TLS-terminálás, domain-kötés céljából) erre a portra; külön nginx statikus fájlkiszolgálás nem szükséges, mert azt is a `fitness` folyamat végzi.
 
 **Fontos:** a jelenlegi AI-endpoint még fejlesztői prototípus szintű, nincs benne felhasználói auth, adatbázis vagy rate limit. Publikus, többfelhasználós élesítés előtt ezeket érdemes hozzáadni; a kliensben tárolt profil és chat egyelőre csak az adott böngészőre vonatkozik.
 
