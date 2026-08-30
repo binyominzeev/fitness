@@ -53,7 +53,7 @@ const HUNGARIAN_DESCRIPTIONS_BY_ORDER = [
   "Négykézláb helyzetben domborítsd és homorítsd a hátad.",
   "Térdelj le, ülj hátra a sarkadra és nyújtsd előre a karod.",
   "Emeld a csípőd magasra, majd nyújtsd a hátad és lábad.",
-  "Nyisd a csípőd lassú, kontrollált mozdulatokkal.",
+  "Lépj egy nagy lépést oldalra, hajlítsd be a térded, és érezd a nyújtást a csípődben.",
   "Nyisd a mellkast, húzd hátra a vállad és a karod.",
   "Körözz lassan a bokáddal mindkét irányba.",
   "Lassan fordítsd a fejed jobbra és balra.",
