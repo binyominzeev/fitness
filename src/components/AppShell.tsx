@@ -15,13 +15,13 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-brand-paper text-brand-ink">
-      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-brand-line bg-brand-paper/95 px-4 py-3 backdrop-blur-sm">
-        <div>
+      <header className="sticky top-0 z-20 flex flex-col gap-3 border-b border-brand-line bg-brand-paper/95 px-4 py-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <p className="text-xs uppercase tracking-[0.2em] text-brand-muted">Interval Trainer</p>
-          <h1 className="font-display text-xl font-semibold">Intervallum Edzés MVP</h1>
+          <h1 className="break-words font-display text-xl font-semibold">Intervallum Edzés MVP</h1>
         </div>
-        <div className="flex shrink-0 items-center gap-2 text-sm">
-          {authenticated && <span className="hidden max-w-32 truncate text-brand-muted sm:inline">{userName}</span>}
+        <div className="flex min-w-0 items-center justify-between gap-2 text-sm sm:justify-end">
+          {authenticated && <span className="min-w-0 max-w-64 break-words text-brand-muted [overflow-wrap:anywhere]">{userName}</span>}
           <button
             type="button"
             onClick={() => (authenticated ? logout() : void login())}
