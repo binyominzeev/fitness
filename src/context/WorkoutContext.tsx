@@ -1,8 +1,10 @@
-import { createContext, useContext, useMemo, useReducer } from "react";
+import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 import type { ReactNode } from "react";
-import { persistPlan, loadPersistedPlan } from "../lib/storage";
+import { saveData } from "../lib/dataApi";
+import { parseStoredPlan } from "../lib/storage";
 import { clampSeconds } from "../lib/workout";
 import type { BulkCopyField, BulkCopyScope, WorkoutItem } from "../types";
+import { useStoredValue } from "./UserDataContext";
 
 type WorkoutState = {
   items: WorkoutItem[];
@@ -60,12 +62,10 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
   switch (action.type) {
     case "add": {
       const next = { items: [...state.items, createItem(action.exerciseId)] };
-      persistPlan(next.items);
       return next;
     }
     case "remove": {
       const next = { items: state.items.filter((item) => item.id !== action.itemId) };
-      persistPlan(next.items);
       return next;
     }
     case "update": {
@@ -88,7 +88,6 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
           };
         }),
       };
-      persistPlan(next.items);
       return next;
     }
     case "bulkCopy": {
@@ -131,7 +130,6 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
       }
 
       const next = { items: nextItems };
-      persistPlan(next.items);
       return next;
     }
     case "move": {
@@ -150,17 +148,14 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
       nextItems.splice(targetIndex, 0, item);
 
       const next = { items: nextItems };
-      persistPlan(next.items);
       return next;
     }
     case "replace": {
       const next = { items: action.items };
-      persistPlan(next.items);
       return next;
     }
     case "clear": {
       const next = { items: [] };
-      persistPlan(next.items);
       return next;
     }
     default:
@@ -169,8 +164,16 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
 }
 
 export function WorkoutProvider({ children }: { children: ReactNode }) {
-  const initialState = useMemo<WorkoutState>(() => ({ items: loadPersistedPlan() }), []);
+  const storedPlan = useStoredValue("plan");
+  const initialState = useMemo<WorkoutState>(() => ({ items: parseStoredPlan(storedPlan) }), [storedPlan]);
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    // A kezdőállapotot nem írjuk vissza; csak a felhasználó módosításait.
+    if (state.items !== initialState.items) {
+      saveData("plan", { items: state.items });
+    }
+  }, [state.items, initialState]);
 
   const value = useMemo<WorkoutContextValue>(
     () => ({

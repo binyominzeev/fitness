@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useWorkoutPlan } from "../context/WorkoutContext";
+import { useAuth } from "../hooks/useAuth";
 
 const navItems = [
   { to: "/", label: "Gyakorlatok" },
@@ -10,13 +11,27 @@ const navItems = [
 
 export function AppShell() {
   const { items } = useWorkoutPlan();
+  const { authenticated, userName, error, login, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-brand-paper text-brand-ink">
-      <header className="sticky top-0 z-20 border-b border-brand-line bg-brand-paper/95 px-4 py-3 backdrop-blur-sm">
-        <p className="text-xs uppercase tracking-[0.2em] text-brand-muted">Interval Trainer</p>
-        <h1 className="font-display text-xl font-semibold">Intervallum Edzés MVP</h1>
+      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-brand-line bg-brand-paper/95 px-4 py-3 backdrop-blur-sm">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-brand-muted">Interval Trainer</p>
+          <h1 className="font-display text-xl font-semibold">Intervallum Edzés MVP</h1>
+        </div>
+        <div className="flex shrink-0 items-center gap-2 text-sm">
+          {authenticated && <span className="hidden max-w-32 truncate text-brand-muted sm:inline">{userName}</span>}
+          <button
+            type="button"
+            onClick={() => (authenticated ? logout() : void login())}
+            className="rounded-xl bg-brand-ink px-3 py-2 text-xs font-semibold text-brand-paper"
+          >
+            {authenticated ? "Kilépés" : "Belépés"}
+          </button>
+        </div>
       </header>
+      {error && <p className="bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       <main className="mx-auto w-full max-w-3xl px-4 pb-24 pt-4">
         <Outlet />

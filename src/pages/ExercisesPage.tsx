@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { ExerciseCard } from "../components/ExerciseCard";
 import { useWorkoutPlan } from "../context/WorkoutContext";
+import { useAuth } from "../hooks/useAuth";
 import { groupExercisesByCategory } from "../lib/exercises";
 import type { Exercise } from "../types";
 
@@ -26,6 +27,7 @@ export function ExercisesPage({
   error,
 }: ExercisesPageProps) {
   const { addItem } = useWorkoutPlan();
+  const { authenticated, login } = useAuth();
   const [addedExerciseName, setAddedExerciseName] = useState<string | null>(null);
   const feedbackTimeoutRef = useRef<number | null>(null);
 
@@ -33,6 +35,11 @@ export function ExercisesPage({
   const groupedExercises = useMemo(() => groupExercisesByCategory(filteredExercises), [filteredExercises]);
 
   const handleAddExercise = (exercise: Exercise) => {
+    if (!authenticated) {
+      void login();
+      return;
+    }
+
     addItem(exercise.id);
     setAddedExerciseName(exercise.exerciseNameHu);
 
@@ -57,6 +64,11 @@ export function ExercisesPage({
 
   return (
     <section className="space-y-4">
+      {!authenticated && (
+        <p className="rounded-2xl bg-brand-soft p-4 text-sm">
+          A gyakorlatok bárki számára böngészhetők. Edzésterv készítéséhez jelentkezz be.
+        </p>
+      )}
       {addedExerciseName && (
         <p
           role="status"

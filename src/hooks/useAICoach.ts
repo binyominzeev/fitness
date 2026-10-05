@@ -1,15 +1,8 @@
 import { useState } from "react";
-import {
-  loadAICoachMemory,
-  loadAICoachProfile,
-  loadAIMessages,
-  loadWorkoutLog,
-  persistAICoachMemory,
-  persistAICoachProfile,
-  persistAIMessages,
-} from "../lib/storage";
+import { useStoredValue } from "../context/UserDataContext";
+import { saveData } from "../lib/dataApi";
 import { sendCoachMessage } from "../lib/aiCoachClient";
-import type { AICoachMemory, AICoachProfile, AIMessage, AIPlanProposal, Exercise } from "../types";
+import type { AICoachMemory, AICoachProfile, AIMessage, AIPlanProposal, Exercise, WorkoutLogEntry } from "../types";
 
 const emptyProfile: AICoachProfile = {
   displayName: "",
@@ -36,16 +29,20 @@ function localCoachReply(content: string): string {
 }
 
 export function useAICoach(exercises: Exercise[]) {
-  const [profile, setProfile] = useState<AICoachProfile>(() => loadAICoachProfile());
-  const [memory, setMemory] = useState<AICoachMemory>(() => loadAICoachMemory());
-  const [messages, setMessages] = useState<AIMessage[]>(() => loadAIMessages());
+  const storedProfile = useStoredValue("aiProfile");
+  const storedMemory = useStoredValue("aiMemory");
+  const storedMessages = useStoredValue("aiMessages");
+  const storedLog = useStoredValue("workoutLog");
+  const [profile, setProfile] = useState<AICoachProfile>(() => ({ ...emptyProfile, ...(storedProfile as Partial<AICoachProfile> | undefined) }));
+  const [memory, setMemory] = useState<AICoachMemory>(() => (storedMemory as AICoachMemory | undefined) ?? { summary: "", updatedAt: "" });
+  const [messages, setMessages] = useState<AIMessage[]>(() => (storedMessages as AIMessage[] | undefined) ?? []);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [planProposal, setPlanProposal] = useState<AIPlanProposal | undefined>(undefined);
 
   const saveProfile = (nextProfile: AICoachProfile) => {
     setProfile(nextProfile);
-    persistAICoachProfile(nextProfile);
+    saveData("aiProfile", nextProfile);
   };
 
   const sendMessage = async (content: string) => {
@@ -57,7 +54,7 @@ export function useAICoach(exercises: Exercise[]) {
     const userMessage = createMessage("user", trimmed);
     const nextMessages = [...messages, userMessage];
     setMessages(nextMessages);
-    persistAIMessages(nextMessages);
+    saveData("aiMessages", nextMessages);
     setError("");
     setPlanProposal(undefined);
     setIsSending(true);
@@ -67,7 +64,7 @@ export function useAICoach(exercises: Exercise[]) {
         profile,
         memory,
         messages: nextMessages,
-        workoutLog: loadWorkoutLog(),
+        workoutLog: (storedLog as WorkoutLogEntry[] | undefined) ?? [],
         exercises: exercises.map(({ id, exerciseNameHu, exerciseNameEn, category }) => ({
           id,
           exerciseNameHu,
@@ -77,17 +74,17 @@ export function useAICoach(exercises: Exercise[]) {
       });
       const finalMessages = [...nextMessages, createMessage("assistant", response.message)];
       setMessages(finalMessages);
-      persistAIMessages(finalMessages);
+      saveData("aiMessages", finalMessages);
       if (response.memory) {
         setMemory(response.memory);
-        persistAICoachMemory(response.memory);
+        saveData("aiMemory", response.memory);
       }
       setPlanProposal(response.planProposal);
     } catch (requestError) {
       const fallbackMessage = createMessage("assistant", localCoachReply(trimmed));
       const finalMessages = [...nextMessages, fallbackMessage];
       setMessages(finalMessages);
-      persistAIMessages(finalMessages);
+      saveData("aiMessages", finalMessages);
       setError(requestError instanceof Error ? requestError.message : "Az AI-edző nem érhető el.");
     } finally {
       setIsSending(false);
@@ -100,8 +97,8 @@ export function useAICoach(exercises: Exercise[]) {
     setMessages([]);
     setMemory({ summary: "", updatedAt: "" });
     setPlanProposal(undefined);
-    persistAIMessages([]);
-    persistAICoachMemory({ summary: "", updatedAt: "" });
+    saveData("aiMessages", []);
+    saveData("aiMemory", { summary: "", updatedAt: "" });
   };
 
   return {

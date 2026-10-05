@@ -1,3 +1,4 @@
+import { apiFetch } from "./auth";
 import type {
   AICoachMemory,
   AICoachProfile,
@@ -22,13 +23,15 @@ export type CoachResponse = {
 };
 
 export async function sendCoachMessage(request: CoachRequest): Promise<CoachResponse> {
-  const response = await fetch("/api/ai/chat", {
+  const response = await apiFetch("/api/ai/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
   });
 
   if (!response.ok) {
+    if (response.status === 401) throw new Error("Az AI-edzőhöz be kell jelentkezned.");
+    if (response.status === 429) throw new Error("Túl sok kérés, próbáld később.");
     throw new Error(response.status === 404 ? "Az AI szolgáltatás még nincs beállítva." : "Az AI-edző most nem elérhető.");
   }
 

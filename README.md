@@ -67,7 +67,16 @@ OPENAI_MODEL=gpt-4o-mini
 PORT=8787
 ```
 
-Az AI-kérés egy saját, függőségmentes Node HTTP szerveren (`server/index.mjs`) megy át, nincs szükség Vercelre vagy más külső platformra. Helyi fejlesztéshez két terminál kell:
+## Bejelentkezés (Pocket ID) és felhasználói adatok
+
+Az edzésterv, az AI profil/beszélgetés/memória és az edzésnapló csak bejelentkezve érhető el, és szerveroldalon (SQLite, `DATABASE_PATH`) tárolódik felhasználónként. A gyakorlatkatalógus publikus. A részletes minta: [AUTH_SETUP.md](AUTH_SETUP.md).
+
+1. Regisztrálj egy új OIDC klienst a Pocket ID-ban; a redirect URI pontosan `https://<domain>/` (fejlesztésben `http://localhost:5173/`).
+2. Töltsd ki a `.env.example` alapján: `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `OIDC_REDIRECT_URI`, valamint a build-idejű `VITE_OIDC_ISSUER` és `VITE_OIDC_CLIENT_ID`.
+3. Az `AI_RATE_LIMIT_PER_HOUR` felhasználónként korlátozza az AI-kéréseket (alapértelmezés 60, `0` = nincs limit).
+4. A `better-sqlite3` natív modul: éles gépen `npm ci` kell. A `data/` mappát érdemes menteni.
+
+Az AI-kérés egy saját Node HTTP szerveren (`server/index.mjs`) megy át, nincs szükség Vercelre vagy más külső platformra. Helyi fejlesztéshez két terminál kell:
 
 ```bash
 npm run server   # AI API szerver a 8787-es porton

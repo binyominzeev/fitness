@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
+import { RequireAuth } from "./components/RequireAuth";
+import { UserDataProvider } from "./context/UserDataContext";
 import { WorkoutProvider } from "./context/WorkoutContext";
 import { useExercises } from "./hooks/useExercises";
 import { AICoachPage } from "./pages/AICoachPage";
@@ -16,6 +18,7 @@ function App() {
   const catalog = useExercises(query, category);
 
   return (
+    <UserDataProvider>
     <WorkoutProvider>
       <Routes>
         <Route element={<AppShell />}>
@@ -34,14 +37,43 @@ function App() {
               />
             }
           />
-          <Route path="/terv" element={<PlanPage exercisesById={catalog.exercisesById} />} />
-          <Route path="/terv/uj" element={<WorkoutWizardPage exercises={catalog.exercises} />} />
-          <Route path="/ai-edzo" element={<AICoachPage exercises={catalog.exercises} exercisesById={catalog.exercisesById} />} />
-          <Route path="/lejatszas" element={<PlaybackPage exercisesById={catalog.exercisesById} />} />
+          <Route
+            path="/terv"
+            element={
+              <RequireAuth reason="Az edzésterved a fiókodhoz van kötve.">
+                <PlanPage exercisesById={catalog.exercisesById} />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/terv/uj"
+            element={
+              <RequireAuth reason="Az edzésterved a fiókodhoz van kötve.">
+                <WorkoutWizardPage exercises={catalog.exercises} />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/ai-edzo"
+            element={
+              <RequireAuth reason="Az AI-edző használatához bejelentkezés kell.">
+                <AICoachPage exercises={catalog.exercises} exercisesById={catalog.exercisesById} />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/lejatszas"
+            element={
+              <RequireAuth reason="A lejátszáshoz az edzéstervedre van szükség.">
+                <PlaybackPage exercisesById={catalog.exercisesById} />
+              </RequireAuth>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </WorkoutProvider>
+    </UserDataProvider>
   );
 }
 
