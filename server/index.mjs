@@ -3,14 +3,14 @@ import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { handleAiChatRequest } from "./aiChat.mjs";
+import { handleAiChatRequest, handlePlanNameRequest } from "./aiChat.mjs";
 import { authenticate, handleAuthRefresh, handleAuthToken } from "./auth.mjs";
 import { isDataKey, loadUserData, saveUserData } from "./db.mjs";
 import { checkAiRateLimit } from "./rateLimit.mjs";
 
 const PORT = Number(process.env.PORT) || 8787;
 const MAX_BODY_BYTES = 200_000;
-const MAX_DATA_BODY_BYTES = 400_000;
+const MAX_DATA_BODY_BYTES = 1_000_000;
 const DIST_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dist");
 
 const MIME_TYPES = {
@@ -124,7 +124,7 @@ async function requireUser(request, response) {
   return auth.userId;
 }
 
-async function handleAiChatHttp(request, response) {
+async function handleAiChatHttp(request, response, handler) {
   if (request.method !== "POST") {
     sendJson(response, 405, { error: "Csak POST kérés engedélyezett." });
     return;
@@ -142,7 +142,7 @@ async function handleAiChatHttp(request, response) {
   const body = await readBodyOrFail(request, response);
   if (body === undefined) return;
 
-  const { status, payload } = await handleAiChatRequest(body);
+  const { status, payload } = await handler(body);
   sendJson(response, status, payload);
 }
 
@@ -190,7 +190,12 @@ const server = http.createServer(async (request, response) => {
 
   try {
     if (pathname === "/api/ai/chat") {
-      await handleAiChatHttp(request, response);
+      await handleAiChatHttp(request, response, handleAiChatRequest);
+      return;
+    }
+
+    if (pathname === "/api/ai/plan-name") {
+      await handleAiChatHttp(request, response, handlePlanNameRequest);
       return;
     }
 

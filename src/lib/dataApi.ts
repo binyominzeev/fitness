@@ -1,6 +1,6 @@
 import { apiFetch } from "./auth";
 
-export type DataKey = "plan" | "aiProfile" | "aiMessages" | "aiMemory" | "workoutLog";
+export type DataKey = "plan" | "plans" | "aiProfile" | "aiMessages" | "aiMemory" | "workoutLog";
 
 const SAVE_DELAY_MS = 500;
 const timers = new Map<DataKey, number>();

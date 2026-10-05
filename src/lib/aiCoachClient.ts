@@ -42,3 +42,15 @@ export async function sendCoachMessage(request: CoachRequest): Promise<CoachResp
 
   return data;
 }
+
+export async function suggestPlanNames(exerciseNames: string[]): Promise<string[]> {
+  const response = await apiFetch("/api/ai/plan-name", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ exercises: exerciseNames }),
+  });
+  if (!response.ok) throw new Error("Az AI névjavaslat most nem elérhető.");
+
+  const data = (await response.json()) as { names?: unknown };
+  return Array.isArray(data.names) ? data.names.filter((name): name is string => typeof name === "string") : [];
+}

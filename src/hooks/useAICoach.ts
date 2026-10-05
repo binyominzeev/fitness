@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useStoredValue } from "../context/UserDataContext";
 import { saveData } from "../lib/dataApi";
 import { sendCoachMessage } from "../lib/aiCoachClient";
+import { derivePlanFromCoachText } from "../lib/planFromCoachText";
 import type { AICoachMemory, AICoachProfile, AIMessage, AIPlanProposal, Exercise, WorkoutLogEntry } from "../types";
 
 const emptyProfile: AICoachProfile = {
@@ -79,7 +80,17 @@ export function useAICoach(exercises: Exercise[]) {
         setMemory(response.memory);
         saveData("aiMemory", response.memory);
       }
-      setPlanProposal(response.planProposal);
+      const validProposal = response.planProposal
+        ? {
+            ...response.planProposal,
+            items: response.planProposal.items.filter((item) => exercises.some((exercise) => exercise.id === item.exerciseId)),
+          }
+        : undefined;
+      setPlanProposal(
+        validProposal?.items.length
+          ? validProposal
+          : derivePlanFromCoachText(response.message, exercises),
+      );
     } catch (requestError) {
       const fallbackMessage = createMessage("assistant", localCoachReply(trimmed));
       const finalMessages = [...nextMessages, fallbackMessage];

@@ -1,6 +1,7 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlanItemEditor } from "../components/PlanItemEditor";
+import { PlanSwitcher } from "../components/PlanSwitcher";
 import { useWorkoutPlan } from "../context/WorkoutContext";
 import { exportPlanToJson, importPlanFromJson } from "../lib/storage";
 import type { Exercise } from "../types";
@@ -11,7 +12,7 @@ type PlanPageProps = {
 
 export function PlanPage({ exercisesById }: PlanPageProps) {
   const navigate = useNavigate();
-  const { items, updateItem, bulkCopyItemValue, moveItem, removeItem, clearAll, replaceItems } = useWorkoutPlan();
+  const { items, activePlan, canCreatePlan, updateItem, bulkCopyItemValue, moveItem, removeItem, clearAll, replaceItems, createPlan } = useWorkoutPlan();
   const [feedback, setFeedback] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +22,7 @@ export function PlanPage({ exercisesById }: PlanPageProps) {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `fitness-plan-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.download = `${activePlan.name.replace(/[^\p{L}\p{N}]+/gu, "-")}-${new Date().toISOString().slice(0, 10)}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
     setFeedback(`Exportálva: ${items.length} elem.`);
@@ -36,7 +37,11 @@ export function PlanPage({ exercisesById }: PlanPageProps) {
     try {
       const raw = await file.text();
       const importedItems = importPlanFromJson(raw);
-      replaceItems(importedItems);
+      if (canCreatePlan) {
+        createPlan(file.name.replace(/\.json$/i, ""), importedItems);
+      } else {
+        replaceItems(importedItems);
+      }
       setFeedback(`Betöltve: ${importedItems.length} elem.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : "A fájl nem olvasható.";
@@ -48,9 +53,10 @@ export function PlanPage({ exercisesById }: PlanPageProps) {
 
   return (
     <section className="space-y-3">
+      <PlanSwitcher exercisesById={exercisesById} />
       <div className="rounded-2xl border border-brand-line bg-white p-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm text-brand-muted">Elemek száma: {items.length}</p>
+          <p className="text-sm text-brand-muted">{activePlan.name} · elemek száma: {items.length}</p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"

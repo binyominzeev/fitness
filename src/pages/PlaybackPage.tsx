@@ -37,7 +37,7 @@ type PlaybackPageProps = {
 };
 
 export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
-  const { items } = useWorkoutPlan();
+  const { items, activePlan, markPlanUsed } = useWorkoutPlan();
 
   const steps = useMemo(() => buildWorkoutSteps(items), [items]);
   const stepDurationsMs = useMemo(() => steps.map((step) => step.durationSeconds * 1000), [steps]);
@@ -151,6 +151,8 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
       return;
     }
 
+    markPlanUsed();
+
     if (playbackState === "finished") {
       const firstDuration = steps[0].durationSeconds * 1000;
       setStepIndex(0);
@@ -223,7 +225,9 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
           <article className="playback-card rounded-3xl border border-brand-line bg-white p-5 text-center shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
         <div className="playback-main">
           <div className="playback-visual-block">
-            <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">{phaseLabel}</p>
+            <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">
+              {activePlan.name} · {phaseLabel}
+            </p>
             {!isRestPhase && (
               <>
                 <h2 className="playback-title mb-2 font-display text-2xl font-semibold">{currentExercise?.exerciseNameHu}</h2>

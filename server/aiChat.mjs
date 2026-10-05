@@ -172,7 +172,7 @@ export function deriveFallbackPlanFromMessage(message, exercises) {
     let best;
     for (const entry of catalog) {
       const score = Math.max(tokenOverlapScore(candidateTokens, entry.huTokens), tokenOverlapScore(candidateTokens, entry.enTokens));
-      if (score >= 0.5 && (!best || score > best.score)) {
+      if (score >= 0.6 && (!best || score > best.score)) {
         best = { id: entry.id, score };
       }
     }
@@ -253,5 +253,60 @@ export async function handleAiChatRequest(body) {
     return { status: 200, payload: planProposal ? { message, planProposal } : { message } };
   } catch {
     return { status: 502, payload: { error: "Az AI szolgáltatás időtúllépés vagy hálózati hiba miatt nem válaszolt." } };
+  }
+}
+
+const NAME_SCHEMA = {
+  name: "plan_names",
+  strict: true,
+  schema: {
+    type: "object",
+    properties: { names: { type: "array", items: { type: "string" } } },
+    required: ["names"],
+    additionalProperties: false,
+  },
+};
+
+export async function handlePlanNameRequest(body) {
+  if (!process.env.OPENAI_API_KEY) {
+    return { status: 503, payload: { error: "Az OPENAI_API_KEY nincs beállítva a szerveren." } };
+  }
+
+  const exercises = Array.isArray(body?.exercises) ? body.exercises.slice(0, MAX_PLAN_ITEMS * 2) : [];
+  const lines = exercises.map((exercise) => text(exercise, 160)).filter(Boolean);
+  if (lines.length === 0) {
+    return { status: 400, payload: { error: "A terv üres." } };
+  }
+
+  try {
+    const openAIResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+        temperature: 0.8,
+        max_tokens: 150,
+        response_format: { type: "json_schema", json_schema: NAME_SCHEMA },
+        messages: [
+          {
+            role: "system",
+            content: "Adj 3 rövid (legfeljebb 4 szavas), kreatív magyar nevet az edzéstervnek a gyakorlatai alapján. Ne használj idézőjelet vagy emojit.",
+          },
+          { role: "user", content: lines.join("\n") },
+        ],
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!openAIResponse.ok) {
+      return { status: 502, payload: { error: "Az OpenAI szolgáltatás hibát adott." } };
+    }
+
+    const payload = await openAIResponse.json();
+    const parsed = JSON.parse(payload.choices?.[0]?.message?.content ?? "");
+    const names = (Array.isArray(parsed.names) ? parsed.names : []).map((name) => text(name, 60)).filter(Boolean).slice(0, 3);
+    return names.length > 0 ? { status: 200, payload: { names } } : { status: 502, payload: { error: "Nem érkezett névjavaslat." } };
+  } catch {
+    return { status: 502, payload: { error: "Az AI szolgáltatás nem válaszolt." } };
   }
 }

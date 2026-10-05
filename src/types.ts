@@ -15,6 +15,20 @@ export type WorkoutItem = {
   restSeconds: number;
 };
 
+export type SavedPlan = {
+  id: string;
+  name: string;
+  items: WorkoutItem[];
+  createdAt: string;
+  updatedAt: string;
+  lastUsedAt: string;
+};
+
+export type PlansState = {
+  activeId: string;
+  plans: SavedPlan[];
+};
+
 export type BulkCopyField = "workSeconds" | "restSeconds";
 
 export type BulkCopyScope = "above" | "below" | "allAbove" | "allBelow" | "all";

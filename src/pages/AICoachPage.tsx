@@ -21,7 +21,7 @@ const profileFields: Array<{ key: keyof AICoachProfile; label: string; placehold
 export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
   const { profile, memory, messages, isSending, error, planProposal, saveProfile, sendMessage, dismissPlanProposal, clearConversation } =
     useAICoach(exercises);
-  const { items, replaceItems } = useWorkoutPlan();
+  const { items, replaceItems, createPlan, canCreatePlan } = useWorkoutPlan();
   const navigate = useNavigate();
   const [draft, setDraft] = useState("");
   const [showProfile, setShowProfile] = useState(false);
@@ -48,7 +48,7 @@ export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
     await sendMessage(value);
   };
 
-  const handleAcceptPlan = (mode: "replace" | "append") => {
+  const handleAcceptPlan = (mode: "new" | "replace" | "append") => {
     if (!planProposal) return;
     const generatedItems = planProposal.items
       .filter((item) => Boolean(exercisesById[item.exerciseId]))
@@ -61,7 +61,11 @@ export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
 
     if (generatedItems.length === 0) return;
 
-    replaceItems(mode === "append" ? [...items, ...generatedItems] : generatedItems);
+    if (mode === "new") {
+      createPlan(planProposal.title, generatedItems);
+    } else {
+      replaceItems(mode === "append" ? [...items, ...generatedItems] : generatedItems);
+    }
     dismissPlanProposal();
     navigate("/terv");
   };
@@ -139,6 +143,7 @@ export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
               <AIPlanProposalCard
                 proposal={planProposal}
                 exercisesById={exercisesById}
+                onSaveNew={canCreatePlan ? () => handleAcceptPlan("new") : undefined}
                 onReplace={() => handleAcceptPlan("replace")}
                 onAppend={() => handleAcceptPlan("append")}
                 onDismiss={dismissPlanProposal}

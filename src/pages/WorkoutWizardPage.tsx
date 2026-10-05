@@ -44,11 +44,12 @@ const INITIAL_ANSWERS: WizardAnswers = {
 
 export function WorkoutWizardPage({ exercises }: WorkoutWizardPageProps) {
   const navigate = useNavigate();
-  const { items, replaceItems } = useWorkoutPlan();
+  const { items, replaceItems, createPlan, canCreatePlan } = useWorkoutPlan();
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<WizardAnswers>(INITIAL_ANSWERS);
-  const [saveMode, setSaveMode] = useState<"replace" | "append">("replace");
+  const [saveModeChoice, setSaveMode] = useState<"new" | "replace" | "append">("new");
+  const saveMode = saveModeChoice === "new" && !canCreatePlan ? "replace" : saveModeChoice;
 
   const recommended = useMemo(() => buildWizardRecommendation(exercises, answers), [exercises, answers]);
 
@@ -70,7 +71,10 @@ export function WorkoutWizardPage({ exercises }: WorkoutWizardPageProps) {
       return;
     }
 
-    if (saveMode === "append") {
+    if (saveMode === "new") {
+      const goalLabel = WIZARD_GOAL_OPTIONS.find((option) => option.value === answers.goal)?.label ?? "";
+      createPlan(goalLabel.replace(/^[^\p{L}]+/u, ""), generatedItems);
+    } else if (saveMode === "append") {
       replaceItems([...items, ...generatedItems]);
     } else {
       replaceItems(generatedItems);
@@ -261,7 +265,17 @@ export function WorkoutWizardPage({ exercises }: WorkoutWizardPageProps) {
               </ul>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-3">
+              <button
+                type="button"
+                disabled={!canCreatePlan}
+                onClick={() => setSaveMode("new")}
+                className={`rounded-xl border px-3 py-3 text-sm transition disabled:opacity-50 ${
+                  saveMode === "new" ? "border-brand-teal bg-brand-soft font-semibold" : "border-brand-line bg-white"
+                }`}
+              >
+                Mentés új tervként
+              </button>
               <button
                 type="button"
                 onClick={() => setSaveMode("replace")}
@@ -269,7 +283,7 @@ export function WorkoutWizardPage({ exercises }: WorkoutWizardPageProps) {
                   saveMode === "replace" ? "border-brand-teal bg-brand-soft font-semibold" : "border-brand-line bg-white"
                 }`}
               >
-                Felülírás a mostani tervre
+                Felülírás az aktív tervre
               </button>
               <button
                 type="button"
@@ -278,7 +292,7 @@ export function WorkoutWizardPage({ exercises }: WorkoutWizardPageProps) {
                   saveMode === "append" ? "border-brand-teal bg-brand-soft font-semibold" : "border-brand-line bg-white"
                 }`}
               >
-                Hozzáfűzés a mostani tervhez
+                Hozzáfűzés az aktív tervhez
               </button>
             </div>
 

@@ -3,12 +3,13 @@ import type { AIPlanProposal, Exercise } from "../types";
 type AIPlanProposalCardProps = {
   proposal: AIPlanProposal;
   exercisesById: Record<string, Exercise>;
+  onSaveNew?: () => void;
   onReplace: () => void;
   onAppend: () => void;
   onDismiss: () => void;
 };
 
-export function AIPlanProposalCard({ proposal, exercisesById, onReplace, onAppend, onDismiss }: AIPlanProposalCardProps) {
+export function AIPlanProposalCard({ proposal, exercisesById, onSaveNew, onReplace, onAppend, onDismiss }: AIPlanProposalCardProps) {
   const knownItems = proposal.items.filter((item) => Boolean(exercisesById[item.exerciseId]));
 
   return (
@@ -40,14 +41,19 @@ export function AIPlanProposalCard({ proposal, exercisesById, onReplace, onAppen
           A javasolt gyakorlatok közül egy sem található a jelenlegi katalógusban.
         </p>
       ) : (
-        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {onSaveNew ? (
+            <button type="button" onClick={onSaveNew} className="rounded-xl bg-brand-teal px-3 py-2 text-sm font-semibold text-white sm:col-span-2">
+              Mentés új tervként
+            </button>
+          ) : null}
           <button type="button" onClick={onReplace} className="rounded-xl bg-brand-ink px-3 py-2 text-sm font-semibold text-white">
-            Csere a mostani tervre
+            Csere az aktív tervre
           </button>
-          <button type="button" onClick={onAppend} className="rounded-xl bg-brand-teal px-3 py-2 text-sm font-semibold text-white">
-            Hozzáadás a tervhez
+          <button type="button" onClick={onAppend} className="rounded-xl bg-brand-ink px-3 py-2 text-sm font-semibold text-white">
+            Hozzáadás az aktív tervhez
           </button>
-          <button type="button" onClick={onDismiss} className="rounded-xl border border-brand-line px-3 py-2 text-sm text-brand-muted">
+          <button type="button" onClick={onDismiss} className="rounded-xl border border-brand-line px-3 py-2 text-sm text-brand-muted sm:col-span-2">
             Elvetés
           </button>
         </div>

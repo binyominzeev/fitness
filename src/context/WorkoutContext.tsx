@@ -1,16 +1,16 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 import type { ReactNode } from "react";
 import { saveData } from "../lib/dataApi";
-import { parseStoredPlan } from "../lib/storage";
+import { parseStoredPlans, createSavedPlan, normalizePlanName, MAX_PLANS } from "../lib/storage";
 import { clampSeconds } from "../lib/workout";
-import type { BulkCopyField, BulkCopyScope, WorkoutItem } from "../types";
+import type { BulkCopyField, BulkCopyScope, PlansState, SavedPlan, WorkoutItem } from "../types";
 import { useStoredValue } from "./UserDataContext";
 
 type WorkoutState = {
   items: WorkoutItem[];
 };
 
-type WorkoutAction =
+type ItemAction =
   | { type: "add"; exerciseId: string }
   | { type: "remove"; itemId: string }
   | { type: "update"; itemId: string; patch: Partial<Pick<WorkoutItem, "workSeconds" | "restSeconds">> }
@@ -19,8 +19,21 @@ type WorkoutAction =
   | { type: "replace"; items: WorkoutItem[] }
   | { type: "clear" };
 
+type PlanAction =
+  | { type: "createPlan"; plan: SavedPlan }
+  | { type: "switchPlan"; id: string; now: string }
+  | { type: "renamePlan"; id: string; name: string; now: string }
+  | { type: "duplicatePlan"; id: string; copy: SavedPlan }
+  | { type: "deletePlan"; id: string }
+  | { type: "markUsed"; now: string };
+
+type WorkoutAction = ItemAction | PlanAction;
+
 type WorkoutContextValue = {
   items: WorkoutItem[];
+  plans: SavedPlan[];
+  activePlan: SavedPlan;
+  canCreatePlan: boolean;
   addItem: (exerciseId: string) => void;
   removeItem: (itemId: string) => void;
   updateItem: (itemId: string, patch: Partial<Pick<WorkoutItem, "workSeconds" | "restSeconds">>) => void;
@@ -28,6 +41,13 @@ type WorkoutContextValue = {
   moveItem: (itemId: string, direction: "up" | "down") => void;
   replaceItems: (items: WorkoutItem[]) => void;
   clearAll: () => void;
+  /** Új tervet hoz létre és aktívvá teszi; az új terv azonosítóját adja vissza. */
+  createPlan: (name: string, items?: WorkoutItem[]) => string;
+  switchPlan: (id: string) => void;
+  renamePlan: (id: string, name: string) => void;
+  duplicatePlan: (id: string) => void;
+  deletePlan: (id: string) => void;
+  markPlanUsed: () => void;
 };
 
 const WorkoutContext = createContext<WorkoutContextValue | null>(null);
@@ -58,7 +78,7 @@ function getTargetIndexes(sourceIndex: number, total: number, scope: BulkCopySco
   }
 }
 
-function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
+function itemsReducer(state: WorkoutState, action: ItemAction): WorkoutState {
   switch (action.type) {
     case "add": {
       const next = { items: [...state.items, createItem(action.exerciseId)] };
@@ -163,21 +183,69 @@ function reducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
   }
 }
 
+function mostRecentlyUsed(plans: SavedPlan[]): SavedPlan {
+  return plans.reduce((best, plan) => (plan.lastUsedAt > best.lastUsedAt ? plan : best));
+}
+
+function mapPlan(state: PlansState, id: string, update: (plan: SavedPlan) => SavedPlan): PlansState {
+  return { ...state, plans: state.plans.map((plan) => (plan.id === id ? update(plan) : plan)) };
+}
+
+function reducer(state: PlansState, action: WorkoutAction): PlansState {
+  switch (action.type) {
+    case "createPlan":
+      return state.plans.length >= MAX_PLANS ? state : { activeId: action.plan.id, plans: [...state.plans, action.plan] };
+    case "switchPlan":
+      return state.plans.some((plan) => plan.id === action.id)
+        ? { ...mapPlan(state, action.id, (plan) => ({ ...plan, lastUsedAt: action.now })), activeId: action.id }
+        : state;
+    case "renamePlan": {
+      const name = normalizePlanName(action.name);
+      return name ? mapPlan(state, action.id, (plan) => ({ ...plan, name, updatedAt: action.now })) : state;
+    }
+    case "duplicatePlan":
+      return state.plans.length >= MAX_PLANS || !state.plans.some((plan) => plan.id === action.id)
+        ? state
+        : { activeId: action.copy.id, plans: [...state.plans, action.copy] };
+    case "deletePlan": {
+      if (state.plans.length <= 1) return state;
+      const plans = state.plans.filter((plan) => plan.id !== action.id);
+      if (plans.length === state.plans.length) return state;
+      return { activeId: state.activeId === action.id ? mostRecentlyUsed(plans).id : state.activeId, plans };
+    }
+    case "markUsed":
+      return mapPlan(state, state.activeId, (plan) => ({ ...plan, lastUsedAt: action.now }));
+    default: {
+      const active = state.plans.find((plan) => plan.id === state.activeId);
+      if (!active) return state;
+      const nextItems = itemsReducer({ items: active.items }, action).items;
+      if (nextItems === active.items) return state;
+      return mapPlan(state, active.id, (plan) => ({ ...plan, items: nextItems, updatedAt: new Date().toISOString() }));
+    }
+  }
+}
+
 export function WorkoutProvider({ children }: { children: ReactNode }) {
-  const storedPlan = useStoredValue("plan");
-  const initialState = useMemo<WorkoutState>(() => ({ items: parseStoredPlan(storedPlan) }), [storedPlan]);
+  const storedPlans = useStoredValue("plans");
+  const storedLegacyPlan = useStoredValue("plan");
+  const initialState = useMemo(() => parseStoredPlans(storedPlans, storedLegacyPlan), [storedPlans, storedLegacyPlan]);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     // A kezdőállapotot nem írjuk vissza; csak a felhasználó módosításait.
-    if (state.items !== initialState.items) {
-      saveData("plan", { items: state.items });
+    if (state !== initialState) {
+      saveData("plans", state);
     }
-  }, [state.items, initialState]);
+  }, [state, initialState]);
+
+  const activePlan = state.plans.find((plan) => plan.id === state.activeId) ?? state.plans[0];
 
   const value = useMemo<WorkoutContextValue>(
     () => ({
-      items: state.items,
+      items: activePlan.items,
+      plans: state.plans,
+      activePlan,
+      canCreatePlan: state.plans.length < MAX_PLANS,
       addItem: (exerciseId) => dispatch({ type: "add", exerciseId }),
       removeItem: (itemId) => dispatch({ type: "remove", itemId }),
       updateItem: (itemId, patch) => dispatch({ type: "update", itemId, patch }),
@@ -185,8 +253,23 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
       moveItem: (itemId, direction) => dispatch({ type: "move", itemId, direction }),
       replaceItems: (items) => dispatch({ type: "replace", items }),
       clearAll: () => dispatch({ type: "clear" }),
+      createPlan: (name, items = []) => {
+        const plan = createSavedPlan(name, items);
+        dispatch({ type: "createPlan", plan });
+        return plan.id;
+      },
+      switchPlan: (id) => dispatch({ type: "switchPlan", id, now: new Date().toISOString() }),
+      renamePlan: (id, name) => dispatch({ type: "renamePlan", id, name, now: new Date().toISOString() }),
+      duplicatePlan: (id) => {
+        const source = state.plans.find((plan) => plan.id === id);
+        if (!source) return;
+        const copy = createSavedPlan(`${source.name} (másolat)`, source.items.map((item) => ({ ...item, id: crypto.randomUUID() })));
+        dispatch({ type: "duplicatePlan", id, copy });
+      },
+      deletePlan: (id) => dispatch({ type: "deletePlan", id }),
+      markPlanUsed: () => dispatch({ type: "markUsed", now: new Date().toISOString() }),
     }),
-    [state.items],
+    [state.plans, activePlan],
   );
 
   return <WorkoutContext.Provider value={value}>{children}</WorkoutContext.Provider>;

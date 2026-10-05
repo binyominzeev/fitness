@@ -5,6 +5,8 @@ import path from "node:path";
 const MAX_MESSAGES = 50;
 const MAX_LOG_ENTRIES = 100;
 const MAX_PLAN_ITEMS = 200;
+const MAX_PLANS = 30;
+const MAX_PLAN_NAME = 60;
 const MAX_STRING = 10_000;
 
 const dbPath = path.resolve(process.env.DATABASE_PATH || "./data/fitness.db");
@@ -53,6 +55,21 @@ function isLogEntry(item) {
   );
 }
 
+function isSavedPlan(plan) {
+  return (
+    isObject(plan) &&
+    isString(plan.id, 100) &&
+    isString(plan.name, MAX_PLAN_NAME) &&
+    plan.name.trim().length > 0 &&
+    Array.isArray(plan.items) &&
+    plan.items.length <= MAX_PLAN_ITEMS &&
+    plan.items.every(isPlanItem) &&
+    isString(plan.createdAt, 100) &&
+    isString(plan.updatedAt, 100) &&
+    isString(plan.lastUsedAt, 100)
+  );
+}
+
 const PROFILE_FIELDS = ["displayName", "goal", "level", "weeklyFrequency", "availableMinutes", "location", "limitations", "notes"];
 
 // Kulcsonként: érvényesít, és a tárolandó (vágott) értéket adja vissza, vagy undefined-ot.
@@ -61,6 +78,16 @@ const validators = {
     isObject(value) && Array.isArray(value.items) && value.items.length <= MAX_PLAN_ITEMS && value.items.every(isPlanItem)
       ? { items: value.items }
       : undefined,
+  plans: (value) => {
+    if (!isObject(value) || !Array.isArray(value.plans)) return undefined;
+    const { plans, activeId } = value;
+    if (plans.length < 1 || plans.length > MAX_PLANS || !plans.every(isSavedPlan)) return undefined;
+    if (new Set(plans.map((plan) => plan.id)).size !== plans.length || !plans.some((plan) => plan.id === activeId)) return undefined;
+    return {
+      activeId,
+      plans: plans.map(({ id, name, items, createdAt, updatedAt, lastUsedAt }) => ({ id, name, items, createdAt, updatedAt, lastUsedAt })),
+    };
+  },
   aiProfile: (value) => (isObject(value) && PROFILE_FIELDS.every((field) => isString(value[field])) ? Object.fromEntries(PROFILE_FIELDS.map((field) => [field, value[field]])) : undefined),
   aiMessages: (value) => (Array.isArray(value) && value.every(isMessage) ? value.slice(-MAX_MESSAGES) : undefined),
   aiMemory: (value) => (isObject(value) && isString(value.summary) && isString(value.updatedAt, 100) ? { summary: value.summary, updatedAt: value.updatedAt } : undefined),
