@@ -6,6 +6,12 @@ export type Exercise = {
   description: string;
   imageFile: string;
   imageUrl: string;
+  phase?: "warmup" | "main" | "finisher" | "cooldown" | "stretch" | "mobility";
+  intensity?: "low" | "medium" | "high";
+  movementPattern?: string;
+  primaryMuscles?: string[];
+  impact?: "low_impact" | "high_impact";
+  difficulty?: "beginner" | "intermediate" | "advanced";
 };
 
 export type WorkoutItem = {

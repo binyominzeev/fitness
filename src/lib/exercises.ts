@@ -86,6 +86,12 @@ type RawExercise = {
   group: string;
   description: string;
   image_file: string;
+  phase?: Exercise["phase"];
+  intensity?: Exercise["intensity"];
+  movementPattern?: string;
+  primaryMuscles?: string[];
+  impact?: Exercise["impact"];
+  difficulty?: Exercise["difficulty"];
 };
 
 export async function loadExercises(): Promise<Exercise[]> {
@@ -104,6 +110,12 @@ export async function loadExercises(): Promise<Exercise[]> {
     description: HUNGARIAN_DESCRIPTIONS_BY_ORDER[index] ?? record.description,
     imageFile: record.image_file,
     imageUrl: `/pictograms/${record.image_file}`,
+    phase: record.phase,
+    intensity: record.intensity,
+    movementPattern: record.movementPattern,
+    primaryMuscles: record.primaryMuscles,
+    impact: record.impact,
+    difficulty: record.difficulty,
   }));
 }
 

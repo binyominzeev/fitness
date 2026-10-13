@@ -13,7 +13,18 @@ type CoachRequest = {
   memory: AICoachMemory;
   messages: AIMessage[];
   workoutLog: WorkoutLogEntry[];
-  exercises: Pick<Exercise, "id" | "exerciseNameHu" | "exerciseNameEn" | "category">[];
+  exercises: Pick<
+    Exercise,
+    | "id"
+    | "exerciseNameHu"
+    | "exerciseNameEn"
+    | "category"
+    | "phase"
+    | "intensity"
+    | "primaryMuscles"
+    | "impact"
+    | "difficulty"
+  >[];
 };
 
 export type CoachResponse = {

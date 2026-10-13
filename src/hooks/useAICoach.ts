@@ -66,12 +66,29 @@ export function useAICoach(exercises: Exercise[]) {
         memory,
         messages: nextMessages,
         workoutLog: (storedLog as WorkoutLogEntry[] | undefined) ?? [],
-        exercises: exercises.map(({ id, exerciseNameHu, exerciseNameEn, category }) => ({
-          id,
-          exerciseNameHu,
-          exerciseNameEn,
-          category,
-        })),
+        exercises: exercises.map(
+          ({
+            id,
+            exerciseNameHu,
+            exerciseNameEn,
+            category,
+            phase,
+            intensity,
+            primaryMuscles,
+            impact,
+            difficulty,
+          }) => ({
+            id,
+            exerciseNameHu,
+            exerciseNameEn,
+            category,
+            phase,
+            intensity,
+            primaryMuscles,
+            impact,
+            difficulty,
+          }),
+        ),
       });
       const finalMessages = [...nextMessages, createMessage("assistant", response.message)];
       setMessages(finalMessages);

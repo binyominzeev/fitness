@@ -30,8 +30,12 @@ export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
   const handleDraftChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setDraft(event.target.value);
     const node = event.target;
+    // Resetting the height to "auto" shrinks the page and makes the browser clamp the scroll position.
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
     node.style.height = "auto";
     node.style.height = `${Math.min(node.scrollHeight, 240)}px`;
+    window.scrollTo(scrollX, scrollY);
   };
 
   const handleProfileChange = (key: keyof AICoachProfile, value: string) => {

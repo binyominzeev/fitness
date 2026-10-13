@@ -1,3 +1,5 @@
+import { FITNESS_PRINCIPLES } from "./fitnessKnowledge.mjs";
+
 const MAX_MESSAGES = 30;
 const MAX_CONTENT_LENGTH = 4000;
 const MAX_CATALOG_ITEMS = 150;
@@ -29,23 +31,37 @@ function compactCatalog(exercises) {
   if (!Array.isArray(exercises)) return "Nincs elérhető gyakorlati katalógus.";
   return exercises
     .slice(0, MAX_CATALOG_ITEMS)
-    .map((exercise) => `${text(exercise.id, 100)} | ${text(exercise.exerciseNameHu, 160)} | ${text(exercise.category, 120)}`)
+    .map((exercise) => {
+      const parts = [
+        text(exercise.id, 100),
+        text(exercise.exerciseNameHu, 120),
+        text(exercise.category, 60),
+        exercise.phase || "main",
+        exercise.intensity || "medium",
+        Array.isArray(exercise.primaryMuscles) ? exercise.primaryMuscles.join(",") : (exercise.primaryMuscles || "full_body"),
+        exercise.impact || "low_impact",
+        exercise.difficulty || "beginner",
+      ];
+      return parts.join(" | ");
+    })
     .join("\n");
 }
 
 function buildSystemPrompt(body) {
   return [
-    "Te egy óvatos, támogató magyar nyelvű AI edző vagy.",
-    "Segíts állapotot felmérni, szokást építeni, és csak a rendelkezésre álló gyakorlati katalógusból javasolj gyakorlatot.",
+    "Te egy professzionális, magabiztos és támogató magyar nyelvű sportszakmai AI személyi edző vagy.",
+    "Segíts állapotot felmérni, szokást építeni, és KIZÁRÓLAG a rendelkezésre álló gyakorlati katalógusból javasolj gyakorlatot.",
     "Ne diagnosztizálj. Sérülés, erős vagy tartós fájdalom esetén javasolj egészségügyi szakembert.",
     "Legyél proaktív: ha a profilból vagy az üzenetekből kiderül a cél, a rendelkezésre álló idő és a helyszín/eszköz, akkor MÁR AZ ELSŐ releváns kérésre adj konkrét planProposal-t. Csak akkor kérdezz vissza kérdés formájában, ha ezek közül ténylegesen hiányzik valami lényeges.",
     "A planProposal.items minden exerciseId mezője KIZÁRÓLAG a megadott katalógusban szereplő ID lehet, mást ne találj ki.",
     "Ha nincs elég infó egy konkrét tervhez, a planProposal legyen null, és a message-ben kérdezz pontosan rá a hiányzó adatra.",
     "A message mezőt Markdownban formázd: rövid bekezdések, szükség esetén '- ' listaelemek és '**fontos**' kiemelés, hogy jól olvasható legyen egy chat buborékban.",
+    "\n" + FITNESS_PRINCIPLES.workoutArchitecture,
+    "\n" + FITNESS_PRINCIPLES.mythsAndCoachingEthics,
     "\nFelhasználói profil:\n" + compactProfile(body.profile),
     "\nHosszú távú összefoglaló:\n" + text(body.memory && body.memory.summary, 3000),
     "\nEdzéselőzmények:\n" + JSON.stringify(Array.isArray(body.workoutLog) ? body.workoutLog.slice(-20) : []),
-    "\nEngedélyezett gyakorlatok (ID | magyar név | kategória):\n" + compactCatalog(body.exercises),
+    "\nEngedélyezett gyakorlatok (ID | magyar név | kategória | fázis | intenzitás | izomcsoportok | impakt | nehézség):\n" + compactCatalog(body.exercises),
   ].join("\n");
 }
 
@@ -227,7 +243,9 @@ export async function handleAiChatRequest(body) {
     });
 
     if (!openAIResponse.ok) {
-      return { status: 502, payload: { error: "Az OpenAI szolgáltatás hibát adott." } };
+      const errText = await openAIResponse.text().catch(() => "");
+      console.error("[aiChat] OpenAI error response:", openAIResponse.status, errText);
+      return { status: 502, payload: { error: `Az OpenAI szolgáltatás hibát adott (${openAIResponse.status}).` } };
     }
 
     const payload = await openAIResponse.json();
@@ -251,7 +269,8 @@ export async function handleAiChatRequest(body) {
     const planProposal =
       sanitizePlanProposal(parsed.planProposal, safeBody.exercises) || deriveFallbackPlanFromMessage(message, safeBody.exercises);
     return { status: 200, payload: planProposal ? { message, planProposal } : { message } };
-  } catch {
+  } catch (err) {
+    console.error("[aiChat] Request failed with error:", err);
     return { status: 502, payload: { error: "Az AI szolgáltatás időtúllépés vagy hálózati hiba miatt nem válaszolt." } };
   }
 }
