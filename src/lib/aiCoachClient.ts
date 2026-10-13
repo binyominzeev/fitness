@@ -13,6 +13,14 @@ type CoachRequest = {
   memory: AICoachMemory;
   messages: AIMessage[];
   workoutLog: WorkoutLogEntry[];
+  activePlan?: {
+    name: string;
+    items: Array<{
+      exerciseId: string;
+      workSeconds: number;
+      restSeconds: number;
+    }>;
+  };
   exercises: Pick<
     Exercise,
     | "id"

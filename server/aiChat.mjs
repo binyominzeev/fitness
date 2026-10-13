@@ -47,18 +47,37 @@ function compactCatalog(exercises) {
     .join("\n");
 }
 
+function compactActivePlan(plan, exercises) {
+  if (!plan || typeof plan !== "object" || !Array.isArray(plan.items) || plan.items.length === 0) {
+    return "Nincs aktív edzésterv kiválasztva.";
+  }
+  const exerciseMap = new Map((Array.isArray(exercises) ? exercises : []).map((ex) => [ex.id, ex]));
+  const lines = [
+    `Terv neve: ${text(plan.name, 100) || "Aktuális edzésterv"}`,
+    "Gyakorlatok sorrendben:",
+  ];
+  plan.items.forEach((item, index) => {
+    const exercise = exerciseMap.get(item.exerciseId);
+    const huName = exercise?.exerciseNameHu || item.exerciseId;
+    lines.push(`  ${index + 1}. [${item.exerciseId}] ${huName} — ${item.workSeconds} mp munka / ${item.restSeconds} mp pihenő`);
+  });
+  return lines.join("\n");
+}
+
 function buildSystemPrompt(body) {
   return [
     "Te egy professzionális, magabiztos és támogató magyar nyelvű sportszakmai AI személyi edző vagy.",
     "Segíts állapotot felmérni, szokást építeni, és KIZÁRÓLAG a rendelkezésre álló gyakorlati katalógusból javasolj gyakorlatot.",
     "Ne diagnosztizálj. Sérülés, erős vagy tartós fájdalom esetén javasolj egészségügyi szakembert.",
     "Legyél proaktív: ha a profilból vagy az üzenetekből kiderül a cél, a rendelkezésre álló idő és a helyszín/eszköz, akkor MÁR AZ ELSŐ releváns kérésre adj konkrét planProposal-t. Csak akkor kérdezz vissza kérdés formájában, ha ezek közül ténylegesen hiányzik valami lényeges.",
+    "Ha a felhasználó a meglévő vagy aktuális edzéstervéről kérdez, azt módosítani vagy elemezni szeretné, támaszkodj az alább megadott 'Aktuális edzésterv' adatokra!",
     "A planProposal.items minden exerciseId mezője KIZÁRÓLAG a megadott katalógusban szereplő ID lehet, mást ne találj ki.",
     "Ha nincs elég infó egy konkrét tervhez, a planProposal legyen null, és a message-ben kérdezz pontosan rá a hiányzó adatra.",
     "A message mezőt Markdownban formázd: rövid bekezdések, szükség esetén '- ' listaelemek és '**fontos**' kiemelés, hogy jól olvasható legyen egy chat buborékban.",
     "\n" + FITNESS_PRINCIPLES.workoutArchitecture,
     "\n" + FITNESS_PRINCIPLES.mythsAndCoachingEthics,
     "\nFelhasználói profil:\n" + compactProfile(body.profile),
+    "\nAktuális edzésterv:\n" + compactActivePlan(body.activePlan, body.exercises),
     "\nHosszú távú összefoglaló:\n" + text(body.memory && body.memory.summary, 3000),
     "\nEdzéselőzmények:\n" + JSON.stringify(Array.isArray(body.workoutLog) ? body.workoutLog.slice(-20) : []),
     "\nEngedélyezett gyakorlatok (ID | magyar név | kategória | fázis | intenzitás | izomcsoportok | impakt | nehézség):\n" + compactCatalog(body.exercises),

@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AIPlanProposalCard } from "../components/AIPlanProposalCard";
 import { useWorkoutPlan } from "../context/WorkoutContext";
 import { useAICoach } from "../hooks/useAICoach";
@@ -19,6 +19,7 @@ const profileFields: Array<{ key: keyof AICoachProfile; label: string; placehold
 ];
 
 export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
+  const { items, activePlan, replaceItems, createPlan, canCreatePlan } = useWorkoutPlan();
   const {
     profile,
     memory,
@@ -37,10 +38,11 @@ export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
     deleteConversation,
     dismissPlanProposal,
     clearConversation,
-  } = useAICoach(exercises);
-  const { items, replaceItems, createPlan, canCreatePlan } = useWorkoutPlan();
+  } = useAICoach(exercises, activePlan);
   const navigate = useNavigate();
-  const [draft, setDraft] = useState("");
+  const location = useLocation();
+  const initialPrompt = (location.state as { initialPrompt?: string } | null)?.initialPrompt ?? "";
+  const [draft, setDraft] = useState(() => initialPrompt);
   const [showProfile, setShowProfile] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<string | undefined>();
   const [creatingConversation, setCreatingConversation] = useState(false);
@@ -48,6 +50,17 @@ export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
   const [renamingConversationId, setRenamingConversationId] = useState<string | undefined>();
   const [renamedConversationName, setRenamedConversationName] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    if (initialPrompt) {
+      navigate(location.pathname, { replace: true, state: {} });
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 240)}px`;
+      }
+    }
+  }, [initialPrompt, location.pathname, navigate]);
 
   const handleDraftChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setDraft(event.target.value);
@@ -177,6 +190,29 @@ export function AICoachPage({ exercises, exercisesById }: AICoachPageProps) {
             <h3 className="font-semibold">{activeConversation.name}</h3>
             <button type="button" onClick={handleClearConversation} className="text-xs text-brand-muted underline underline-offset-2">Beszélgetés ürítése</button>
           </div>
+
+          {activePlan && activePlan.items.length > 0 ? (
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-brand-soft px-3 py-2 text-xs text-brand-muted">
+              <span>
+                Aktuális terv: <strong className="text-brand-ink">{activePlan.name}</strong> ({activePlan.items.length} gyakorlat)
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setDraft((prev) =>
+                    prev.trim()
+                      ? `${prev}\n\nNézd meg a(z) "${activePlan.name}" nevű edzéstervemet és javasolj hozzá módosításokat!`
+                      : `Nézd meg a mostani edzéstervemet (${activePlan.name}). Nem rossz, de szeretnék rajta csiszolni: `,
+                  );
+                  if (textareaRef.current) textareaRef.current.focus();
+                }}
+                className="font-medium text-brand-teal hover:underline"
+              >
+                Hivatkozás a kérdésben
+              </button>
+            </div>
+          ) : null}
+
           <div className="min-h-64 space-y-3">
             {messages.length === 0 ? <p className="rounded-xl bg-brand-soft p-3 text-sm leading-6 text-brand-muted">Kezdd például így: „Két hete próbálok rendszeresen edzeni, de mindig elfogy a lendületem.”</p> : null}
             {messages.map((message) => (

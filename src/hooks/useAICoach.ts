@@ -3,7 +3,7 @@ import { useStoredValue } from "../context/UserDataContext";
 import { saveData } from "../lib/dataApi";
 import { sendCoachMessage } from "../lib/aiCoachClient";
 import { derivePlanFromCoachText } from "../lib/planFromCoachText";
-import type { AICoachMemory, AICoachProfile, AIConversation, AIMessage, AIPlanProposal, Exercise, WorkoutLogEntry } from "../types";
+import type { AICoachMemory, AICoachProfile, AIConversation, AIMessage, AIPlanProposal, Exercise, SavedPlan, WorkoutLogEntry } from "../types";
 
 const emptyProfile: AICoachProfile = {
   displayName: "",
@@ -41,7 +41,7 @@ function localCoachReply(content: string): string {
   return "**Nem sikerült elérni az AI-szervert.** A profilodat és a beszélgetésedet elmentettem, de a válasz most helyi tartalék szöveg, nem valódi AI-válasz. Indítsd el a `npm run server` parancsot, és próbáld újra.";
 }
 
-export function useAICoach(exercises: Exercise[]) {
+export function useAICoach(exercises: Exercise[], activePlan?: SavedPlan) {
   const storedProfile = useStoredValue("aiProfile");
   const storedMemory = useStoredValue("aiMemory");
   const storedMessages = useStoredValue("aiMessages");
@@ -183,6 +183,16 @@ export function useAICoach(exercises: Exercise[]) {
         memory: nextConversation.memory,
         messages: nextMessages.slice(-50),
         workoutLog: (storedLog as WorkoutLogEntry[] | undefined) ?? [],
+        activePlan: activePlan
+          ? {
+              name: activePlan.name,
+              items: activePlan.items.map((item) => ({
+                exerciseId: item.exerciseId,
+                workSeconds: item.workSeconds,
+                restSeconds: item.restSeconds,
+              })),
+            }
+          : undefined,
         exercises: exercises.map(
           ({
             id,

@@ -60,6 +60,19 @@ export function PlanPage({ exercisesById }: PlanPageProps) {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
+              onClick={() =>
+                navigate("/ai-edzo", {
+                  state: {
+                    initialPrompt: `Nézd meg a mostani edzéstervemet (${activePlan.name}). Nem rossz, de szeretnék módosítani rajta: `,
+                  },
+                })
+              }
+              className="rounded-xl bg-brand-ink px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Konzultáció AI edzővel
+            </button>
+            <button
+              type="button"
               onClick={() => navigate("/terv/uj")}
               className="rounded-xl bg-brand-teal px-3 py-2 text-sm font-semibold text-white"
             >
