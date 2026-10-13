@@ -1,6 +1,6 @@
 import { apiFetch } from "./auth";
 
-export type DataKey = "plan" | "plans" | "aiProfile" | "aiMessages" | "aiMemory" | "workoutLog";
+export type DataKey = "plan" | "plans" | "aiProfile" | "aiMessages" | "aiMemory" | "aiConversations" | "workoutLog";
 
 const SAVE_DELAY_MS = 500;
 const timers = new Map<DataKey, number>();
@@ -12,18 +12,24 @@ export async function loadAllData(): Promise<Partial<Record<DataKey, unknown>>> 
   return body.data ?? {};
 }
 
-// Kulcsonként összevonja a gyors egymás utáni mentéseket; a hibát a következő mentés javítja.
+// Kulcsonként összevonja a gyors egymás utáni mentéseket; a mentési hibák láthatók a konzolon.
 export function saveData(key: DataKey, value: unknown): void {
   window.clearTimeout(timers.get(key));
   timers.set(
     key,
     window.setTimeout(() => {
       timers.delete(key);
-      apiFetch(`/api/data/${key}`, {
+      void apiFetch(`/api/data/${key}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ value }),
-      }).catch(() => undefined);
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        })
+        .catch((error: unknown) => {
+          console.error(`A(z) ${key} adat mentése sikertelen.`, error);
+        });
     }, SAVE_DELAY_MS),
   );
 }

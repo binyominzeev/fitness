@@ -3,6 +3,9 @@ import { mkdirSync } from "node:fs";
 import path from "node:path";
 
 const MAX_MESSAGES = 50;
+const MAX_CONVERSATIONS = 30;
+const MAX_CONVERSATION_CHARS = 750_000;
+const MAX_CONVERSATION_NAME = 80;
 const MAX_LOG_ENTRIES = 100;
 const MAX_PLAN_ITEMS = 200;
 const MAX_PLANS = 30;
@@ -40,6 +43,23 @@ function isPlanItem(item) {
 
 function isMessage(item) {
   return isObject(item) && isString(item.id, 100) && (item.role === "user" || item.role === "assistant") && isString(item.content) && isString(item.createdAt, 100);
+}
+
+function isConversation(item) {
+  return (
+    isObject(item) &&
+    isString(item.id, 100) &&
+    isString(item.name, MAX_CONVERSATION_NAME) &&
+    item.name.trim().length > 0 &&
+    Array.isArray(item.messages) &&
+    item.messages.length <= MAX_MESSAGES &&
+    item.messages.every(isMessage) &&
+    isObject(item.memory) &&
+    isString(item.memory.summary) &&
+    isString(item.memory.updatedAt, 100) &&
+    isString(item.createdAt, 100) &&
+    isString(item.updatedAt, 100)
+  );
 }
 
 function isLogEntry(item) {
@@ -91,6 +111,27 @@ const validators = {
   aiProfile: (value) => (isObject(value) && PROFILE_FIELDS.every((field) => isString(value[field])) ? Object.fromEntries(PROFILE_FIELDS.map((field) => [field, value[field]])) : undefined),
   aiMessages: (value) => (Array.isArray(value) && value.every(isMessage) ? value.slice(-MAX_MESSAGES) : undefined),
   aiMemory: (value) => (isObject(value) && isString(value.summary) && isString(value.updatedAt, 100) ? { summary: value.summary, updatedAt: value.updatedAt } : undefined),
+  aiConversations: (value) => {
+    if (!isObject(value) || !Array.isArray(value.conversations) || value.conversations.length < 1 || value.conversations.length > MAX_CONVERSATIONS) return undefined;
+    const { conversations, activeId } = value;
+    const totalChars = conversations.reduce(
+      (total, conversation) =>
+        total +
+        (Array.isArray(conversation?.messages)
+          ? conversation.messages.reduce((messageTotal, message) => messageTotal + (typeof message?.content === "string" ? message.content.length : 0), 0)
+          : 0),
+      0,
+    );
+    if (
+      !conversations.every(isConversation) ||
+      new Set(conversations.map((conversation) => conversation.id)).size !== conversations.length ||
+      !conversations.some((conversation) => conversation.id === activeId) ||
+      totalChars > MAX_CONVERSATION_CHARS
+    ) {
+      return undefined;
+    }
+    return { activeId, conversations };
+  },
   workoutLog: (value) => (Array.isArray(value) && value.every(isLogEntry) ? value.slice(-MAX_LOG_ENTRIES) : undefined),
 };
 

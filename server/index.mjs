@@ -10,7 +10,7 @@ import { checkAiRateLimit } from "./rateLimit.mjs";
 
 const PORT = Number(process.env.PORT) || 8787;
 const MAX_BODY_BYTES = 200_000;
-const MAX_DATA_BODY_BYTES = 1_000_000;
+const MAX_DATA_BODY_BYTES = 6_000_000;
 const DIST_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dist");
 
 const MIME_TYPES = {

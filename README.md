@@ -33,6 +33,8 @@ Mobil-first, offline-képes Progressive Web App intervallumos edzéstervek össz
   - az utolsó gyakorlat után nincs pihenő lépés
 - `AI edző` oldal
   - helyben mentett profil és beszélgetési előzmény
+  - elnevezhető, átnevezhető, kiválasztható és törölhető külön beszélgetések
+  - korábbi kérdés szerkesztése és újraküldése az utána következő válaszok lecserélésével
   - AI-szerverhez kötött magyar nyelvű edzői beszélgetés
   - szerverhiba esetén helyi fallback mód
 - PWA/offline

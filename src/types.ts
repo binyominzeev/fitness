@@ -97,6 +97,15 @@ export type AICoachMemory = {
   updatedAt: string;
 };
 
+export type AIConversation = {
+  id: string;
+  name: string;
+  messages: AIMessage[];
+  memory: AICoachMemory;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type WorkoutLogEntry = {
   id: string;
   completedAt: string;
