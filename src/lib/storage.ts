@@ -1,4 +1,5 @@
-import type { PlansState, SavedPlan, WorkoutItem } from "../types";
+import type { PlansState, SavedPlan, WorkoutItem, WorkoutLoop } from "../types";
+import { normalizeLoops } from "./workout";
 
 export const MAX_PLANS = 30;
 export const MAX_PLAN_NAME = 60;
@@ -6,7 +7,27 @@ export const DEFAULT_PLAN_NAME = "Az első tervem";
 
 export type PersistedPlan = {
   items: WorkoutItem[];
+  loops?: WorkoutLoop[];
 };
+
+function isWorkoutLoop(value: unknown): value is WorkoutLoop {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<WorkoutLoop>;
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.startItemId === "string" &&
+    typeof candidate.endItemId === "string" &&
+    typeof candidate.repeats === "number" &&
+    Number.isFinite(candidate.repeats)
+  );
+}
+
+function parseLoops(items: WorkoutItem[], value: unknown): WorkoutLoop[] {
+  return Array.isArray(value) ? normalizeLoops(items, value.filter(isWorkoutLoop)) : [];
+}
 
 function isWorkoutItem(value: unknown): value is WorkoutItem {
   if (typeof value !== "object" || value === null) {
@@ -58,9 +79,9 @@ export function parseStoredPlan(value: unknown): WorkoutItem[] {
   }
 }
 
-export function createSavedPlan(name: string, items: WorkoutItem[]): SavedPlan {
+export function createSavedPlan(name: string, items: WorkoutItem[], loops: WorkoutLoop[] = []): SavedPlan {
   const now = new Date().toISOString();
-  return { id: crypto.randomUUID(), name: normalizePlanName(name) || DEFAULT_PLAN_NAME, items, createdAt: now, updatedAt: now, lastUsedAt: now };
+  return { id: crypto.randomUUID(), name: normalizePlanName(name) || DEFAULT_PLAN_NAME, items, loops, createdAt: now, updatedAt: now, lastUsedAt: now };
 }
 
 export function normalizePlanName(name: string): string {
@@ -77,6 +98,7 @@ function parseSavedPlan(value: unknown): SavedPlan | undefined {
     id: candidate.id,
     name: normalizePlanName(candidate.name) || DEFAULT_PLAN_NAME,
     items,
+    loops: parseLoops(items, candidate.loops),
     createdAt: typeof candidate.createdAt === "string" ? candidate.createdAt : now,
     updatedAt: typeof candidate.updatedAt === "string" ? candidate.updatedAt : now,
     lastUsedAt: typeof candidate.lastUsedAt === "string" ? candidate.lastUsedAt : now,
@@ -98,12 +120,14 @@ export function parseStoredPlans(plansValue: unknown, legacyPlanValue: unknown):
   return { activeId: plan.id, plans: [plan] };
 }
 
-export function importPlanFromJson(raw: string): WorkoutItem[] {
+export function importPlanFromJson(raw: string): { items: WorkoutItem[]; loops: WorkoutLoop[] } {
   const parsed = JSON.parse(raw) as unknown;
-  return normalizePlanItems(parsed);
+  const items = normalizePlanItems(parsed);
+  const loops = typeof parsed === "object" && parsed !== null ? parseLoops(items, (parsed as Partial<PersistedPlan>).loops) : [];
+  return { items, loops };
 }
 
-export function exportPlanToJson(items: WorkoutItem[]): string {
-  const payload: PersistedPlan = { items };
+export function exportPlanToJson(items: WorkoutItem[], loops: WorkoutLoop[] = []): string {
+  const payload: PersistedPlan = { items, loops };
   return JSON.stringify(payload, null, 2);
 }

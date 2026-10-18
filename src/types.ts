@@ -21,10 +21,18 @@ export type WorkoutItem = {
   restSeconds: number;
 };
 
+export type WorkoutLoop = {
+  id: string;
+  startItemId: string;
+  endItemId: string;
+  repeats: number;
+};
+
 export type SavedPlan = {
   id: string;
   name: string;
   items: WorkoutItem[];
+  loops?: WorkoutLoop[];
   createdAt: string;
   updatedAt: string;
   lastUsedAt: string;
@@ -45,6 +53,8 @@ export type WorkoutStep = {
   exerciseId: string;
   phase: "work" | "rest";
   durationSeconds: number;
+  round: number;
+  totalRounds: number;
 };
 
 export type WorkoutPlaybackState = "idle" | "running" | "paused" | "finished";

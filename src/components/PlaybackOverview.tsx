@@ -11,16 +11,24 @@ type PlaybackOverviewProps = {
 type OverviewGroup = {
   itemId: string;
   exerciseId: string;
+  round: number;
+  totalRounds: number;
   steps: WorkoutStep[];
 };
 
+function isSameGroup(a: WorkoutStep, b: WorkoutStep): boolean {
+  return a.itemId === b.itemId && a.round === b.round;
+}
+
 function groupStepsByItem(steps: WorkoutStep[]): OverviewGroup[] {
   return steps
-    .filter((step, index) => steps.findIndex((candidate) => candidate.itemId === step.itemId) === index)
+    .filter((step, index) => steps.findIndex((candidate) => isSameGroup(candidate, step)) === index)
     .map((firstStep) => ({
       itemId: firstStep.itemId,
       exerciseId: firstStep.exerciseId,
-      steps: steps.filter((step) => step.itemId === firstStep.itemId),
+      round: firstStep.round,
+      totalRounds: firstStep.totalRounds,
+      steps: steps.filter((step) => isSameGroup(step, firstStep)),
     }));
 }
 
@@ -32,7 +40,7 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSele
   const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
   const groups = groupStepsByItem(steps);
   const activeStep = steps[activeStepIndex];
-  const activeGroupIndex = groups.findIndex((group) => group.itemId === activeStep?.itemId);
+  const activeGroupIndex = groups.findIndex((group) => group.itemId === activeStep?.itemId && group.round === activeStep?.round);
 
   useEffect(() => {
     rowRefs.current[activeGroupIndex]?.scrollIntoView({ block: "nearest" });
@@ -56,7 +64,7 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSele
 
           return (
             <li
-              key={group.itemId}
+              key={`${group.itemId}-${group.round}`}
               ref={(element) => {
                 rowRefs.current[groupIndex] = element;
               }}
@@ -77,6 +85,11 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSele
                   <span className="min-w-0 flex-1 truncate text-sm font-semibold">
                     {exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"}
                   </span>
+                  {group.totalRounds > 1 && (
+                    <span className="shrink-0 rounded-full bg-brand-line px-2 py-0.5 text-[10px] font-bold">
+                      Kör {group.round}/{group.totalRounds}
+                    </span>
+                  )}
                   {isActiveGroup && <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.1em] text-brand-teal">Most</span>}
                 </div>
 

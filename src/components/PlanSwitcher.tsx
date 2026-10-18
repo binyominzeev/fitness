@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useWorkoutPlan } from "../context/WorkoutContext";
 import { suggestPlanNames } from "../lib/aiCoachClient";
 import { MAX_PLAN_NAME } from "../lib/storage";
+import { buildWorkoutSteps } from "../lib/workout";
 import type { Exercise, SavedPlan } from "../types";
 
 type PlanSwitcherProps = {
@@ -22,7 +23,7 @@ function formatRelative(iso: string): string {
 }
 
 function planMinutes(plan: SavedPlan): number {
-  const seconds = plan.items.reduce((sum, item, index) => sum + item.workSeconds + (index < plan.items.length - 1 ? item.restSeconds : 0), 0);
+  const seconds = buildWorkoutSteps(plan.items, plan.loops).reduce((sum, step) => sum + step.durationSeconds, 0);
   return Math.max(0, Math.round(seconds / 60));
 }
 

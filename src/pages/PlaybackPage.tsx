@@ -45,11 +45,11 @@ type ActiveWorkoutSession = {
 };
 
 export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
-  const { items, activePlan, markPlanUsed } = useWorkoutPlan();
+  const { items, loops, activePlan, markPlanUsed } = useWorkoutPlan();
   const { addEntry } = useWorkoutLog();
   const sessionRef = useRef<ActiveWorkoutSession | null>(null);
 
-  const steps = useMemo(() => buildWorkoutSteps(items), [items]);
+  const steps = useMemo(() => buildWorkoutSteps(items, loops), [items, loops]);
   const stepDurationsMs = useMemo(() => steps.map((step) => step.durationSeconds * 1000), [steps]);
   const cumulativeStepEndsMs = useMemo(() => {
     return stepDurationsMs.reduce<number[]>((acc, durationMs) => {
@@ -271,6 +271,7 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
           <div className="playback-visual-block">
             <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">
               {activePlan.name} · {phaseLabel}
+              {currentStep && currentStep.totalRounds > 1 ? ` · Kör ${currentStep.round}/${currentStep.totalRounds}` : ""}
             </p>
             {!isRestPhase && (
               <>

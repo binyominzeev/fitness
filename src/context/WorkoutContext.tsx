@@ -2,8 +2,8 @@ import { createContext, useContext, useEffect, useMemo, useReducer } from "react
 import type { ReactNode } from "react";
 import { saveData } from "../lib/dataApi";
 import { parseStoredPlans, createSavedPlan, normalizePlanName, MAX_PLANS } from "../lib/storage";
-import { clampSeconds } from "../lib/workout";
-import type { BulkCopyField, BulkCopyScope, PlansState, SavedPlan, WorkoutItem } from "../types";
+import { clampRepeats, clampSeconds, getLoopRanges, normalizeLoops } from "../lib/workout";
+import type { BulkCopyField, BulkCopyScope, PlansState, SavedPlan, WorkoutItem, WorkoutLoop } from "../types";
 import { useStoredValue } from "./UserDataContext";
 
 type WorkoutState = {
@@ -16,8 +16,13 @@ type ItemAction =
   | { type: "update"; itemId: string; patch: Partial<Pick<WorkoutItem, "workSeconds" | "restSeconds">> }
   | { type: "bulkCopy"; sourceItemId: string; field: BulkCopyField; scope: BulkCopyScope }
   | { type: "move"; itemId: string; direction: "up" | "down" }
-  | { type: "replace"; items: WorkoutItem[] }
+  | { type: "replace"; items: WorkoutItem[]; loops?: WorkoutLoop[] }
   | { type: "clear" };
+
+type LoopAction =
+  | { type: "addLoop"; startItemId: string; endItemId: string; repeats: number; id: string }
+  | { type: "updateLoop"; loopId: string; repeats: number }
+  | { type: "removeLoop"; loopId: string };
 
 type PlanAction =
   | { type: "createPlan"; plan: SavedPlan }
@@ -27,10 +32,11 @@ type PlanAction =
   | { type: "deletePlan"; id: string }
   | { type: "markUsed"; now: string };
 
-type WorkoutAction = ItemAction | PlanAction;
+type WorkoutAction = ItemAction | PlanAction | LoopAction;
 
 type WorkoutContextValue = {
   items: WorkoutItem[];
+  loops: WorkoutLoop[];
   plans: SavedPlan[];
   activePlan: SavedPlan;
   canCreatePlan: boolean;
@@ -39,10 +45,13 @@ type WorkoutContextValue = {
   updateItem: (itemId: string, patch: Partial<Pick<WorkoutItem, "workSeconds" | "restSeconds">>) => void;
   bulkCopyItemValue: (sourceItemId: string, field: BulkCopyField, scope: BulkCopyScope) => void;
   moveItem: (itemId: string, direction: "up" | "down") => void;
-  replaceItems: (items: WorkoutItem[]) => void;
+  replaceItems: (items: WorkoutItem[], loops?: WorkoutLoop[]) => void;
+  addLoop: (startItemId: string, endItemId: string, repeats: number) => void;
+  updateLoop: (loopId: string, repeats: number) => void;
+  removeLoop: (loopId: string) => void;
   clearAll: () => void;
   /** Új tervet hoz létre és aktívvá teszi; az új terv azonosítóját adja vissza. */
-  createPlan: (name: string, items?: WorkoutItem[]) => string;
+  createPlan: (name: string, items?: WorkoutItem[], loops?: WorkoutLoop[]) => string;
   switchPlan: (id: string) => void;
   renamePlan: (id: string, name: string) => void;
   duplicatePlan: (id: string) => void;
@@ -215,12 +224,35 @@ function reducer(state: PlansState, action: WorkoutAction): PlansState {
     }
     case "markUsed":
       return mapPlan(state, state.activeId, (plan) => ({ ...plan, lastUsedAt: action.now }));
+    case "addLoop": {
+      const active = state.plans.find((plan) => plan.id === state.activeId);
+      if (!active) return state;
+      const start = active.items.findIndex((item) => item.id === action.startItemId);
+      const end = active.items.findIndex((item) => item.id === action.endItemId);
+      const overlaps = getLoopRanges(active.items, active.loops).some((range) => start <= range.end && end >= range.start);
+      if (start === -1 || end < start || overlaps) return state;
+      const loop: WorkoutLoop = { id: action.id, startItemId: action.startItemId, endItemId: action.endItemId, repeats: clampRepeats(action.repeats) };
+      return mapPlan(state, active.id, (plan) => ({ ...plan, loops: [...(plan.loops ?? []), loop], updatedAt: new Date().toISOString() }));
+    }
+    case "updateLoop":
+      return mapPlan(state, state.activeId, (plan) => ({
+        ...plan,
+        loops: (plan.loops ?? []).map((loop) => (loop.id === action.loopId ? { ...loop, repeats: clampRepeats(action.repeats) } : loop)),
+        updatedAt: new Date().toISOString(),
+      }));
+    case "removeLoop":
+      return mapPlan(state, state.activeId, (plan) => ({
+        ...plan,
+        loops: (plan.loops ?? []).filter((loop) => loop.id !== action.loopId),
+        updatedAt: new Date().toISOString(),
+      }));
     default: {
       const active = state.plans.find((plan) => plan.id === state.activeId);
       if (!active) return state;
       const nextItems = itemsReducer({ items: active.items }, action).items;
       if (nextItems === active.items) return state;
-      return mapPlan(state, active.id, (plan) => ({ ...plan, items: nextItems, updatedAt: new Date().toISOString() }));
+      const nextLoops = normalizeLoops(nextItems, action.type === "replace" && action.loops ? action.loops : active.loops);
+      return mapPlan(state, active.id, (plan) => ({ ...plan, items: nextItems, loops: nextLoops, updatedAt: new Date().toISOString() }));
     }
   }
 }
@@ -243,6 +275,7 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
   const value = useMemo<WorkoutContextValue>(
     () => ({
       items: activePlan.items,
+      loops: activePlan.loops ?? [],
       plans: state.plans,
       activePlan,
       canCreatePlan: state.plans.length < MAX_PLANS,
@@ -251,10 +284,13 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
       updateItem: (itemId, patch) => dispatch({ type: "update", itemId, patch }),
       bulkCopyItemValue: (sourceItemId, field, scope) => dispatch({ type: "bulkCopy", sourceItemId, field, scope }),
       moveItem: (itemId, direction) => dispatch({ type: "move", itemId, direction }),
-      replaceItems: (items) => dispatch({ type: "replace", items }),
+      replaceItems: (items, loops) => dispatch({ type: "replace", items, loops }),
+      addLoop: (startItemId, endItemId, repeats) => dispatch({ type: "addLoop", startItemId, endItemId, repeats, id: crypto.randomUUID() }),
+      updateLoop: (loopId, repeats) => dispatch({ type: "updateLoop", loopId, repeats }),
+      removeLoop: (loopId) => dispatch({ type: "removeLoop", loopId }),
       clearAll: () => dispatch({ type: "clear" }),
-      createPlan: (name, items = []) => {
-        const plan = createSavedPlan(name, items);
+      createPlan: (name, items = [], loops = []) => {
+        const plan = createSavedPlan(name, items, loops);
         dispatch({ type: "createPlan", plan });
         return plan.id;
       },
@@ -263,7 +299,14 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
       duplicatePlan: (id) => {
         const source = state.plans.find((plan) => plan.id === id);
         if (!source) return;
-        const copy = createSavedPlan(`${source.name} (másolat)`, source.items.map((item) => ({ ...item, id: crypto.randomUUID() })));
+        const idMap = new Map(source.items.map((item) => [item.id, crypto.randomUUID()]));
+        const copyItems = source.items.map((item) => ({ ...item, id: idMap.get(item.id) as string }));
+        const copyLoops = (source.loops ?? []).flatMap((loop) => {
+          const startItemId = idMap.get(loop.startItemId);
+          const endItemId = idMap.get(loop.endItemId);
+          return startItemId && endItemId ? [{ ...loop, id: crypto.randomUUID(), startItemId, endItemId }] : [];
+        });
+        const copy = createSavedPlan(`${source.name} (másolat)`, copyItems, copyLoops);
         dispatch({ type: "duplicatePlan", id, copy });
       },
       deletePlan: (id) => dispatch({ type: "deletePlan", id }),
