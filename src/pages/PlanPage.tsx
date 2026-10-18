@@ -4,10 +4,8 @@ import { PlanItemEditor } from "../components/PlanItemEditor";
 import { PlanSwitcher } from "../components/PlanSwitcher";
 import { useWorkoutPlan } from "../context/WorkoutContext";
 import { exportPlanToJson, importPlanFromJson } from "../lib/storage";
-import { clampRepeats, getLoopRanges, MAX_LOOP_REPEATS, MIN_LOOP_REPEATS } from "../lib/workout";
+import { clampRepeats, getLoopRanges, LOOP_COLORS, MAX_LOOP_REPEATS, MIN_LOOP_REPEATS } from "../lib/workout";
 import type { Exercise } from "../types";
-
-const LOOP_COLORS = ["bg-sky-500", "bg-emerald-500", "bg-orange-500", "bg-violet-500"];
 
 type PlanPageProps = {
   exercisesById: Record<string, Exercise>;

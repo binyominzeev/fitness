@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlaybackOverview } from "../components/PlaybackOverview";
 import { useWorkoutLog } from "../context/WorkoutLogContext";
 import { useWorkoutPlan } from "../context/WorkoutContext";
-import { buildWorkoutSteps } from "../lib/workout";
+import { buildWorkoutSteps, LOOP_BORDER_COLORS, LOOP_COLORS, LOOP_TEXT_COLORS } from "../lib/workout";
 import type { Exercise, WorkoutLogEntry, WorkoutPlaybackState } from "../types";
 
 const PHASE_RING_RADIUS = 82;
@@ -99,6 +99,14 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
   }, [activeStepIndex, steps]);
   const upcomingExercise = nextWorkStep ? exercisesById[nextWorkStep.exerciseId] : undefined;
   const isRestPhase = currentStep?.phase === "rest";
+  const upcomingRoundLabel = (() => {
+    if (!nextWorkStep || nextWorkStep.totalRounds <= 1) return "";
+    const startsNewRound = currentStep?.totalRounds !== nextWorkStep.totalRounds || currentStep.round !== nextWorkStep.round;
+    if (startsNewRound) {
+      return nextWorkStep.round === nextWorkStep.totalRounds ? "utolsó ismétlés indul" : `${nextWorkStep.round}. ismétlés indul`;
+    }
+    return `${nextWorkStep.round}/${nextWorkStep.totalRounds}. ismétlés`;
+  })();
   const currentStepDurationMs = currentStep ? currentStep.durationSeconds * 1000 : 0;
   const currentStepStartMs = activeStepIndex === 0 ? 0 : (cumulativeStepEndsMs[activeStepIndex - 1] ?? 0);
   const clampedRemainingMs = clamp(remainingMs, 0, currentStepDurationMs);
@@ -271,8 +279,13 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
           <div className="playback-visual-block">
             <p className="playback-phase-label mb-2 text-xs uppercase tracking-[0.2em] text-brand-muted">
               {activePlan.name} · {phaseLabel}
-              {currentStep && currentStep.totalRounds > 1 ? ` · Kör ${currentStep.round}/${currentStep.totalRounds}` : ""}
             </p>
+            {currentStep && currentStep.totalRounds > 1 && (
+              <p className={`mb-2 inline-flex items-center gap-1.5 rounded-full border-2 bg-white px-3 py-1 text-sm font-bold ${LOOP_BORDER_COLORS[currentStep.loopIndex % LOOP_BORDER_COLORS.length]} ${LOOP_TEXT_COLORS[currentStep.loopIndex % LOOP_TEXT_COLORS.length]}`}>
+                <span aria-hidden="true">⟲</span>
+                {currentStep.round}/{currentStep.totalRounds}. ismétlés
+              </p>
+            )}
             {!isRestPhase && (
               <>
                 <h2 className="playback-title mb-2 font-display text-2xl font-semibold">{currentExercise?.exerciseNameHu}</h2>
@@ -287,7 +300,10 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
 
             {isRestPhase && (
               <div className="playback-upcoming mx-auto mb-4 max-w-xl rounded-2xl border border-dashed border-brand-line bg-brand-soft/55 px-4 py-3">
-                <p className="mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-muted">Upcoming</p>
+                <p className="mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-muted">
+                  Upcoming
+                  {upcomingRoundLabel ? ` · ${upcomingRoundLabel}` : ""}
+                </p>
                 <h2 className="playback-title mb-2 font-mono text-2xl font-semibold leading-tight text-brand-ink">{upcomingExercise?.exerciseNameHu}</h2>
                 <img
                   src={upcomingExercise?.imageUrl}
@@ -317,6 +333,16 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
             </svg>
             <p className="playback-ring-time col-start-1 row-start-1 font-display text-5xl font-semibold tabular-nums">{formatSeconds(remainingSeconds)}</p>
           </div>
+          {currentStep && currentStep.totalRounds > 1 && (
+            <div className="mb-4 flex items-center justify-center gap-2" role="img" aria-label={`${currentStep.round}. ismétlés ${currentStep.totalRounds} közül`}>
+              {Array.from({ length: currentStep.totalRounds }, (_, index) => (
+                <span
+                  key={index}
+                  className={`h-2.5 rounded-full ${index + 1 === currentStep.round ? "w-6" : "w-2.5"} ${index + 1 <= currentStep.round ? LOOP_COLORS[currentStep.loopIndex % LOOP_COLORS.length] : "bg-brand-line"}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="playback-timeline mt-2 space-y-2 text-left">

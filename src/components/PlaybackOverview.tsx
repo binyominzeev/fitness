@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { LOOP_BORDER_COLORS, LOOP_TEXT_COLORS } from "../lib/workout";
 import type { Exercise, WorkoutStep } from "../types";
 
 type PlaybackOverviewProps = {
@@ -13,7 +14,14 @@ type OverviewGroup = {
   exerciseId: string;
   round: number;
   totalRounds: number;
+  loopIndex: number;
   steps: WorkoutStep[];
+};
+
+type OverviewSegment = {
+  loopIndex: number;
+  totalRounds: number;
+  groups: OverviewGroup[];
 };
 
 function isSameGroup(a: WorkoutStep, b: WorkoutStep): boolean {
@@ -28,8 +36,19 @@ function groupStepsByItem(steps: WorkoutStep[]): OverviewGroup[] {
       exerciseId: firstStep.exerciseId,
       round: firstStep.round,
       totalRounds: firstStep.totalRounds,
+      loopIndex: firstStep.loopIndex,
       steps: steps.filter((step) => isSameGroup(step, firstStep)),
     }));
+}
+
+function groupSegments(groups: OverviewGroup[]): OverviewSegment[] {
+  return groups.reduce<OverviewSegment[]>((segments, group) => {
+    const last = segments[segments.length - 1];
+    if (last && group.loopIndex !== -1 && last.loopIndex === group.loopIndex) {
+      return [...segments.slice(0, -1), { ...last, groups: [...last.groups, group] }];
+    }
+    return [...segments, { loopIndex: group.loopIndex, totalRounds: group.totalRounds, groups: [group] }];
+  }, []);
 }
 
 function formatDuration(seconds: number): string {
@@ -46,67 +65,116 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSele
     rowRefs.current[activeGroupIndex]?.scrollIntoView({ block: "nearest" });
   }, [activeGroupIndex]);
 
+  const segments = groupSegments(groups);
+  const itemOrder = groups.map((group) => group.itemId).filter((itemId, index, all) => all.indexOf(itemId) === index);
+
+  const renderGroup = (group: OverviewGroup) => {
+    const groupIndex = groups.indexOf(group);
+    const exercise = exercisesById[group.exerciseId];
+    const activeStepInGroup = group.steps.find((step) => steps.indexOf(step) === activeStepIndex);
+    const isActiveGroup = groupIndex === activeGroupIndex;
+    const workStep = group.steps.find((step) => step.phase === "work");
+    const restStep = group.steps.find((step) => step.phase === "rest");
+    const workStepIndex = steps.indexOf(workStep ?? group.steps[0]);
+
+    return (
+      <li
+        key={`${group.itemId}-${group.round}`}
+        ref={(element) => {
+          rowRefs.current[groupIndex] = element;
+        }}
+        className="list-none"
+      >
+        <button
+          type="button"
+          onClick={() => onSelectStep(workStepIndex)}
+          className={`w-full rounded-2xl border p-3 text-left transition-colors hover:border-brand-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal ${
+            isActiveGroup ? "border-brand-teal bg-brand-soft" : "border-brand-line bg-brand-paper/60"
+          }`}
+          aria-label={`${exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"} megnyitása`}
+        >
+          <div className="flex items-center gap-2">
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-ink text-xs font-semibold text-brand-paper">
+              {itemOrder.indexOf(group.itemId) + 1}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+              {exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"}
+            </span>
+            {isActiveGroup && <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.1em] text-brand-teal">Most</span>}
+          </div>
+
+          <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+            <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "work" ? "bg-green-100 text-green-800" : "bg-white/70 text-brand-muted"}`}>
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Munka</span>
+              <span className="font-mono font-semibold">{workStep ? formatDuration(workStep.durationSeconds) : "-"}</span>
+            </span>
+            <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "rest" ? "bg-blue-100 text-blue-800" : "bg-white/70 text-brand-muted"}`}>
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Pihenő</span>
+              <span className="font-mono font-semibold">{restStep ? formatDuration(restStep.durationSeconds) : "-"}</span>
+            </span>
+          </div>
+        </button>
+      </li>
+    );
+  };
+
+  const renderLoop = (segment: OverviewSegment, segmentIndex: number) => {
+    const color = segment.loopIndex % LOOP_BORDER_COLORS.length;
+    const rounds = Array.from({ length: segment.totalRounds }, (_, index) => index + 1);
+    const firstItemNumber = itemOrder.indexOf(segment.groups[0].itemId) + 1;
+    const lastItemNumber = itemOrder.indexOf(segment.groups[segment.groups.length - 1].itemId) + 1;
+    const activeRound = segment.groups.some((group) => group.round === activeStep?.round && group.itemId === activeStep?.itemId)
+      ? activeStep.round
+      : 1;
+
+    return (
+      <li key={`loop-${segmentIndex}`} className={`list-none rounded-2xl border-2 p-2 ${LOOP_BORDER_COLORS[color]}`}>
+        <p className={`mb-2 px-1 text-xs font-bold uppercase tracking-[0.1em] ${LOOP_TEXT_COLORS[color]}`}>
+          ⟲ {firstItemNumber}.–{lastItemNumber}. gyakorlat · {segment.totalRounds}×
+        </p>
+        <ol className="space-y-2">
+          {rounds.map((round) => {
+            const roundGroups = segment.groups.filter((group) => group.round === round);
+            const isExpanded = round === activeRound;
+            const isActiveRound = round === activeStep?.round && roundGroups.some((group) => group.itemId === activeStep?.itemId);
+
+            return (
+              <li key={round} className="list-none">
+                {isExpanded ? (
+                  <>
+                    <p className={`mb-1 px-1 text-[11px] font-semibold ${LOOP_TEXT_COLORS[color]}`}>
+                      {round}/{segment.totalRounds}. ismétlés
+                    </p>
+                    <ol className="space-y-2">{roundGroups.map(renderGroup)}</ol>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onSelectStep(steps.indexOf(roundGroups[0].steps[0]))}
+                    className={`w-full rounded-xl border border-dashed px-3 py-2 text-left text-xs font-semibold ${LOOP_BORDER_COLORS[color]} ${isActiveRound ? "bg-brand-soft" : "bg-white/70"}`}
+                  >
+                    {round}/{segment.totalRounds}. ismétlés · {roundGroups.length} gyakorlat
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </li>
+    );
+  };
+
   return (
     <aside className="playback-overview-panel rounded-3xl border border-brand-line bg-white p-4 text-left shadow-[0_20px_40px_rgba(16,24,40,0.08)]">
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <h2 className="font-display text-base font-semibold">Edzésterv</h2>
-        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-muted">{groups.length} gyakorlat</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-muted">{itemOrder.length} gyakorlat</span>
       </div>
 
       <ol className="playback-overview-list space-y-2 overflow-y-auto pr-1">
-        {groups.map((group, groupIndex) => {
-          const exercise = exercisesById[group.exerciseId];
-          const activeStepInGroup = group.steps.find((step) => steps.indexOf(step) === activeStepIndex);
-          const isActiveGroup = groupIndex === activeGroupIndex;
-          const workStep = group.steps.find((step) => step.phase === "work");
-          const restStep = group.steps.find((step) => step.phase === "rest");
-          const workStepIndex = steps.indexOf(workStep ?? group.steps[0]);
-
-          return (
-            <li
-              key={`${group.itemId}-${group.round}`}
-              ref={(element) => {
-                rowRefs.current[groupIndex] = element;
-              }}
-              className="list-none"
-            >
-              <button
-                type="button"
-                onClick={() => onSelectStep(workStepIndex)}
-                className={`w-full rounded-2xl border p-3 text-left transition-colors hover:border-brand-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal ${
-                  isActiveGroup ? "border-brand-teal bg-brand-soft" : "border-brand-line bg-brand-paper/60"
-                }`}
-                aria-label={`${exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"} megnyitása`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-ink text-xs font-semibold text-brand-paper">
-                    {groupIndex + 1}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">
-                    {exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"}
-                  </span>
-                  {group.totalRounds > 1 && (
-                    <span className="shrink-0 rounded-full bg-brand-line px-2 py-0.5 text-[10px] font-bold">
-                      Kör {group.round}/{group.totalRounds}
-                    </span>
-                  )}
-                  {isActiveGroup && <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.1em] text-brand-teal">Most</span>}
-                </div>
-
-                <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                  <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "work" ? "bg-green-100 text-green-800" : "bg-white/70 text-brand-muted"}`}>
-                    <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Munka</span>
-                    <span className="font-mono font-semibold">{workStep ? formatDuration(workStep.durationSeconds) : "-"}</span>
-                  </span>
-                  <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "rest" ? "bg-blue-100 text-blue-800" : "bg-white/70 text-brand-muted"}`}>
-                    <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Pihenő</span>
-                    <span className="font-mono font-semibold">{restStep ? formatDuration(restStep.durationSeconds) : "-"}</span>
-                  </span>
-                </div>
-              </button>
-            </li>
-          );
-        })}
+        {segments.map((segment, segmentIndex) =>
+          segment.loopIndex === -1 ? renderGroup(segment.groups[0]) : renderLoop(segment, segmentIndex),
+        )}
       </ol>
     </aside>
   );

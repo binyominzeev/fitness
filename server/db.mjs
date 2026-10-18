@@ -9,6 +9,7 @@ const MAX_CONVERSATION_NAME = 80;
 const MAX_LOG_ENTRIES = 100;
 const MAX_PLAN_ITEMS = 200;
 const MAX_PLANS = 30;
+const MAX_PLAN_LOOPS = 50;
 const MAX_PLAN_NAME = 60;
 const MAX_STRING = 10_000;
 
@@ -39,6 +40,18 @@ const isSeconds = (value) => typeof value === "number" && Number.isFinite(value)
 
 function isPlanItem(item) {
   return isObject(item) && isString(item.id, 100) && isString(item.exerciseId, 100) && isSeconds(item.workSeconds) && isSeconds(item.restSeconds);
+}
+
+function isPlanLoop(loop) {
+  return (
+    isObject(loop) &&
+    isString(loop.id, 100) &&
+    isString(loop.startItemId, 100) &&
+    isString(loop.endItemId, 100) &&
+    Number.isInteger(loop.repeats) &&
+    loop.repeats >= 2 &&
+    loop.repeats <= 20
+  );
 }
 
 function isMessage(item) {
@@ -84,6 +97,7 @@ function isSavedPlan(plan) {
     Array.isArray(plan.items) &&
     plan.items.length <= MAX_PLAN_ITEMS &&
     plan.items.every(isPlanItem) &&
+    (plan.loops === undefined || (Array.isArray(plan.loops) && plan.loops.length <= MAX_PLAN_LOOPS && plan.loops.every(isPlanLoop))) &&
     isString(plan.createdAt, 100) &&
     isString(plan.updatedAt, 100) &&
     isString(plan.lastUsedAt, 100)
@@ -105,7 +119,7 @@ const validators = {
     if (new Set(plans.map((plan) => plan.id)).size !== plans.length || !plans.some((plan) => plan.id === activeId)) return undefined;
     return {
       activeId,
-      plans: plans.map(({ id, name, items, createdAt, updatedAt, lastUsedAt }) => ({ id, name, items, createdAt, updatedAt, lastUsedAt })),
+      plans: plans.map(({ id, name, items, loops, createdAt, updatedAt, lastUsedAt }) => ({ id, name, items, loops: loops ?? [], createdAt, updatedAt, lastUsedAt })),
     };
   },
   aiProfile: (value) => (isObject(value) && PROFILE_FIELDS.every((field) => isString(value[field])) ? Object.fromEntries(PROFILE_FIELDS.map((field) => [field, value[field]])) : undefined),

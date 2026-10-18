@@ -55,6 +55,7 @@ export type WorkoutStep = {
   durationSeconds: number;
   round: number;
   totalRounds: number;
+  loopIndex: number;
 };
 
 export type WorkoutPlaybackState = "idle" | "running" | "paused" | "finished";
