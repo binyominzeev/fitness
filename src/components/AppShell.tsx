@@ -7,6 +7,7 @@ const navItems = [
   { to: "/terv", label: "Edzésterv", withCount: true },
   { to: "/ai-edzo", label: "AI edző" },
   { to: "/lejatszas", label: "Lejátszás" },
+  { to: "/naplo", label: "Napló" },
 ];
 
 export function AppShell() {
@@ -38,13 +39,13 @@ export function AppShell() {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-brand-line bg-brand-paper/95 px-2 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-sm">
-        <ul className="mx-auto grid max-w-3xl grid-cols-4 gap-2">
+        <ul className="mx-auto grid max-w-3xl grid-cols-5 gap-1 sm:gap-2">
           {navItems.map((item) => (
             <li key={item.to}>
               <NavLink
                 to={item.to}
                 className={({ isActive }) =>
-                  `block rounded-xl px-2 py-3 text-center text-sm font-medium transition ${
+                  `block rounded-lg px-1 py-3 text-center text-xs font-medium transition sm:rounded-xl sm:px-2 sm:text-sm ${
                     isActive
                       ? "bg-brand-ink text-brand-paper"
                       : "bg-white text-brand-ink shadow-[0_1px_0_rgba(0,0,0,0.06)]"

@@ -3,12 +3,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { RequireAuth } from "./components/RequireAuth";
 import { UserDataProvider } from "./context/UserDataContext";
+import { WorkoutLogProvider } from "./context/WorkoutLogContext";
 import { WorkoutProvider } from "./context/WorkoutContext";
 import { useExercises } from "./hooks/useExercises";
 import { AICoachPage } from "./pages/AICoachPage";
 import { ExercisesPage } from "./pages/ExercisesPage";
 import { PlaybackPage } from "./pages/PlaybackPage";
 import { PlanPage } from "./pages/PlanPage";
+import { WorkoutLogPage } from "./pages/WorkoutLogPage";
 import { WorkoutWizardPage } from "./pages/WorkoutWizardPage";
 
 function App() {
@@ -19,6 +21,7 @@ function App() {
 
   return (
     <UserDataProvider>
+    <WorkoutLogProvider>
     <WorkoutProvider>
       <Routes>
         <Route element={<AppShell />}>
@@ -69,10 +72,19 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route
+            path="/naplo"
+            element={
+              <RequireAuth reason="Az edzésnaplód megtekintéséhez bejelentkezés kell.">
+                <WorkoutLogPage />
+              </RequireAuth>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </WorkoutProvider>
+    </WorkoutLogProvider>
     </UserDataProvider>
   );
 }

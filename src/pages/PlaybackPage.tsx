@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlaybackOverview } from "../components/PlaybackOverview";
+import { useWorkoutLog } from "../context/WorkoutLogContext";
 import { useWorkoutPlan } from "../context/WorkoutContext";
 import { buildWorkoutSteps } from "../lib/workout";
-import type { Exercise, WorkoutPlaybackState } from "../types";
+import type { Exercise, WorkoutLogEntry, WorkoutPlaybackState } from "../types";
 
 const PHASE_RING_RADIUS = 82;
 const PHASE_RING_CIRCUMFERENCE = 2 * Math.PI * PHASE_RING_RADIUS;
@@ -36,8 +37,17 @@ type PlaybackPageProps = {
   exercisesById: Record<string, Exercise>;
 };
 
+type ActiveWorkoutSession = {
+  id: string;
+  exerciseCount: number;
+  elapsedMs: number;
+  runningSince: number | null;
+};
+
 export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
   const { items, activePlan, markPlanUsed } = useWorkoutPlan();
+  const { addEntry } = useWorkoutLog();
+  const sessionRef = useRef<ActiveWorkoutSession | null>(null);
 
   const steps = useMemo(() => buildWorkoutSteps(items), [items]);
   const stepDurationsMs = useMemo(() => steps.map((step) => step.durationSeconds * 1000), [steps]);
@@ -54,6 +64,26 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
   const [remainingMs, setRemainingMs] = useState(firstDurationMs);
   const [phaseEndAt, setPhaseEndAt] = useState<number | null>(null);
   const [playbackState, setPlaybackState] = useState<WorkoutPlaybackState>("idle");
+
+  const finishSession = useCallback((completed: boolean) => {
+    const session = sessionRef.current;
+    if (!session) return;
+
+    const elapsedMs = session.elapsedMs + (session.runningSince === null ? 0 : Date.now() - session.runningSince);
+    sessionRef.current = null;
+    if (elapsedMs < 60_000) return;
+
+    const entry: WorkoutLogEntry = {
+      id: session.id,
+      completedAt: new Date().toISOString(),
+      durationSeconds: Math.floor(elapsedMs / 1000),
+      completed,
+      exerciseCount: session.exerciseCount,
+    };
+    addEntry(entry);
+  }, [addEntry]);
+
+  useEffect(() => () => finishSession(false), [finishSession]);
 
   const activeStepIndex = Math.min(stepIndex, Math.max(steps.length - 1, 0));
   const currentStep = steps[activeStepIndex];
@@ -90,6 +120,7 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
 
       const nextIndex = activeStepIndex + 1;
       if (nextIndex >= steps.length) {
+        finishSession(true);
         setRemainingMs(0);
         setPhaseEndAt(null);
         setPlaybackState("finished");
@@ -103,7 +134,7 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     }, 50);
 
     return () => window.clearInterval(timer);
-  }, [activeStepIndex, phaseEndAt, playbackState, steps]);
+  }, [activeStepIndex, finishSession, phaseEndAt, playbackState, steps]);
 
   function seekToElapsedMs(rawElapsedMs: number) {
     if (steps.length === 0) {
@@ -113,6 +144,7 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     const boundedElapsedMs = clamp(rawElapsedMs, 0, totalDurationMs);
 
     if (boundedElapsedMs >= totalDurationMs) {
+      finishSession(false);
       const lastIndex = steps.length - 1;
       setStepIndex(lastIndex);
       setRemainingMs(0);
@@ -154,12 +186,19 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     markPlanUsed();
 
     if (playbackState === "finished") {
+      sessionRef.current = { id: crypto.randomUUID(), exerciseCount: items.length, elapsedMs: 0, runningSince: Date.now() };
       const firstDuration = steps[0].durationSeconds * 1000;
       setStepIndex(0);
       setRemainingMs(firstDuration);
       setPhaseEndAt(Date.now() + firstDuration);
       setPlaybackState("running");
       return;
+    }
+
+    if (!sessionRef.current) {
+      sessionRef.current = { id: crypto.randomUUID(), exerciseCount: items.length, elapsedMs: 0, runningSince: Date.now() };
+    } else if (sessionRef.current.runningSince === null) {
+      sessionRef.current.runningSince = Date.now();
     }
 
     if (activeStepIndex !== stepIndex) {
@@ -178,11 +217,16 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     }
 
     setRemainingMs(Math.max(0, phaseEndAt - Date.now()));
+    if (sessionRef.current?.runningSince !== null && sessionRef.current) {
+      sessionRef.current.elapsedMs += Date.now() - sessionRef.current.runningSince;
+      sessionRef.current.runningSince = null;
+    }
     setPhaseEndAt(null);
     setPlaybackState("paused");
   }
 
   function reset() {
+    finishSession(false);
     if (steps.length === 0) {
       setPlaybackState("idle");
       setStepIndex(0);
