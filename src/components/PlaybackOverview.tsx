@@ -51,18 +51,23 @@ function groupSegments(groups: OverviewGroup[]): OverviewSegment[] {
   }, []);
 }
 
-function formatDuration(seconds: number): string {
-  return `${seconds} mp`;
-}
 
 export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSelectStep }: PlaybackOverviewProps) {
   const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const listRef = useRef<HTMLOListElement | null>(null);
   const groups = groupStepsByItem(steps);
   const activeStep = steps[activeStepIndex];
   const activeGroupIndex = groups.findIndex((group) => group.itemId === activeStep?.itemId && group.round === activeStep?.round);
 
+  // Scroll only the list container (not the page) so the active row sits mid-panel with upcoming rows visible.
   useEffect(() => {
-    rowRefs.current[activeGroupIndex]?.scrollIntoView({ block: "nearest" });
+    const list = listRef.current;
+    const row = rowRefs.current[activeGroupIndex];
+    if (!list || !row) return;
+    const listRect = list.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
+    const offset = rowRect.top - listRect.top + list.scrollTop - (list.clientHeight - rowRect.height) / 2;
+    list.scrollTo({ top: Math.max(0, offset), behavior: "smooth" });
   }, [activeGroupIndex]);
 
   const segments = groupSegments(groups);
@@ -74,7 +79,6 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSele
     const activeStepInGroup = group.steps.find((step) => steps.indexOf(step) === activeStepIndex);
     const isActiveGroup = groupIndex === activeGroupIndex;
     const workStep = group.steps.find((step) => step.phase === "work");
-    const restStep = group.steps.find((step) => step.phase === "rest");
     const workStepIndex = steps.indexOf(workStep ?? group.steps[0]);
 
     return (
@@ -88,30 +92,25 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSele
         <button
           type="button"
           onClick={() => onSelectStep(workStepIndex)}
-          className={`w-full rounded-2xl border p-3 text-left transition-colors hover:border-brand-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal ${
+          className={`w-full rounded-lg border px-2 py-1 text-left transition-colors hover:border-brand-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal ${
             isActiveGroup ? "border-brand-teal bg-brand-soft" : "border-brand-line bg-brand-paper/60"
           }`}
           aria-label={`${exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"} megnyitása`}
         >
           <div className="flex items-center gap-2">
-            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-ink text-xs font-semibold text-brand-paper">
+            <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-ink text-[10px] font-semibold text-brand-paper">
               {itemOrder.indexOf(group.itemId) + 1}
             </span>
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+            <span className="min-w-0 flex-1 truncate text-xs font-semibold">
               {exercise?.exerciseNameHu ?? "Ismeretlen gyakorlat"}
             </span>
-            {isActiveGroup && <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.1em] text-brand-teal">Most</span>}
-          </div>
-
-          <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-            <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "work" ? "bg-green-100 text-green-800" : "bg-white/70 text-brand-muted"}`}>
-              <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Munka</span>
-              <span className="font-mono font-semibold">{workStep ? formatDuration(workStep.durationSeconds) : "-"}</span>
-            </span>
-            <span className={`rounded-lg px-2 py-1.5 ${activeStepInGroup?.phase === "rest" ? "bg-blue-100 text-blue-800" : "bg-white/70 text-brand-muted"}`}>
-              <span className="block text-[10px] font-semibold uppercase tracking-[0.08em]">Pihenő</span>
-              <span className="font-mono font-semibold">{restStep ? formatDuration(restStep.durationSeconds) : "-"}</span>
-            </span>
+            {isActiveGroup && (
+              <span
+                className={`shrink-0 text-[9px] font-bold uppercase tracking-[0.08em] ${activeStepInGroup?.phase === "rest" ? "text-blue-700" : "text-brand-teal"}`}
+              >
+                {activeStepInGroup?.phase === "rest" ? "Pihenő" : "Most"}
+              </span>
+            )}
           </div>
         </button>
       </li>
@@ -171,7 +170,7 @@ export function PlaybackOverview({ steps, activeStepIndex, exercisesById, onSele
         <span className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-muted">{itemOrder.length} gyakorlat</span>
       </div>
 
-      <ol className="playback-overview-list space-y-2 overflow-y-auto pr-1">
+      <ol ref={listRef} className="playback-overview-list space-y-1 overflow-y-auto pr-1 max-h-[50svh]">
         {segments.map((segment, segmentIndex) =>
           segment.loopIndex === -1 ? renderGroup(segment.groups[0]) : renderLoop(segment, segmentIndex),
         )}

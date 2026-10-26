@@ -377,14 +377,38 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
           </article>
 
           <div className="playback-controls grid grid-cols-3 gap-2">
-            <button type="button" onClick={startOrResume} className="rounded-xl bg-brand-teal px-3 py-3 font-semibold text-white">
-              {playbackState === "running" ? "Fut" : playbackState === "paused" ? "Folytatás" : "Indítás"}
+            <button
+              type="button"
+              onClick={startOrResume}
+              aria-label={playbackState === "running" ? "Fut" : playbackState === "paused" ? "Folytatás" : "Indítás"}
+              title="Lejátszás"
+              className="grid place-items-center rounded-xl bg-brand-teal px-3 py-3 text-white"
+            >
+              <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
             </button>
-            <button type="button" onClick={pause} className="rounded-xl border border-brand-line bg-white px-3 py-3 font-semibold">
-              Szünet
+            <button
+              type="button"
+              onClick={pause}
+              aria-label="Szünet"
+              title="Szünet"
+              className="grid place-items-center rounded-xl border border-brand-line bg-white px-3 py-3 text-brand-ink"
+            >
+              <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor" aria-hidden="true">
+                <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+              </svg>
             </button>
-            <button type="button" onClick={reset} className="rounded-xl border border-brand-line bg-white px-3 py-3 font-semibold">
-              Újra
+            <button
+              type="button"
+              onClick={reset}
+              aria-label="Újra"
+              title="Újra"
+              className="grid place-items-center rounded-xl border border-brand-line bg-white px-3 py-3 text-brand-ink"
+            >
+              <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor" aria-hidden="true">
+                <path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" />
+              </svg>
             </button>
           </div>
         </div>
