@@ -5,6 +5,8 @@ import { useWorkoutPlan } from "../context/WorkoutContext";
 import { buildWorkoutSteps, LOOP_BORDER_COLORS, LOOP_COLORS, LOOP_TEXT_COLORS } from "../lib/workout";
 import type { Exercise, WorkoutLogEntry, WorkoutPlaybackState } from "../types";
 
+const AUTOSAVE_INTERVAL_MS = 30_000;
+const SEEK_STEP_MS = 10_000;
 const PHASE_RING_RADIUS = 82;
 const PHASE_RING_CIRCUMFERENCE = 2 * Math.PI * PHASE_RING_RADIUS;
 
@@ -65,12 +67,11 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
   const [phaseEndAt, setPhaseEndAt] = useState<number | null>(null);
   const [playbackState, setPlaybackState] = useState<WorkoutPlaybackState>("idle");
 
-  const finishSession = useCallback((completed: boolean) => {
+  const saveProgress = useCallback((completed: boolean) => {
     const session = sessionRef.current;
     if (!session) return;
 
     const elapsedMs = session.elapsedMs + (session.runningSince === null ? 0 : Date.now() - session.runningSince);
-    sessionRef.current = null;
     if (elapsedMs < 60_000) return;
 
     const entry: WorkoutLogEntry = {
@@ -82,6 +83,29 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     };
     addEntry(entry);
   }, [addEntry]);
+
+  const finishSession = useCallback((completed: boolean) => {
+    saveProgress(completed);
+    sessionRef.current = null;
+  }, [saveProgress]);
+
+  // Időszakos mentés, hogy az app váratlan kilépésekor se vesszen el az edzés.
+  useEffect(() => {
+    if (playbackState !== "running") return;
+
+    const timer = window.setInterval(() => saveProgress(false), AUTOSAVE_INTERVAL_MS);
+    const onHide = () => {
+      if (document.visibilityState === "hidden") saveProgress(false);
+    };
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", onHide);
+
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", onHide);
+    };
+  }, [playbackState, saveProgress]);
 
   useEffect(() => () => finishSession(false), [finishSession]);
 
@@ -179,6 +203,11 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
     if (playbackState === "finished") {
       setPlaybackState("paused");
     }
+  }
+
+  function skipBySeconds(deltaMs: number) {
+    if (playbackState === "idle") return;
+    seekToElapsedMs(elapsedTotalMs + deltaMs);
   }
 
   function seekToStep(stepIndex: number) {
@@ -409,6 +438,25 @@ export function PlaybackPage({ exercisesById }: PlaybackPageProps) {
               <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor" aria-hidden="true">
                 <path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" />
               </svg>
+            </button>
+          </div>
+
+          <div className="playback-skip flex justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => skipBySeconds(-SEEK_STEP_MS)}
+              aria-label="10 másodperc vissza"
+              className="rounded-lg border border-brand-line bg-white px-3 py-1.5 text-xs font-semibold text-brand-ink"
+            >
+              −10 mp
+            </button>
+            <button
+              type="button"
+              onClick={() => skipBySeconds(SEEK_STEP_MS)}
+              aria-label="10 másodperc előre"
+              className="rounded-lg border border-brand-line bg-white px-3 py-1.5 text-xs font-semibold text-brand-ink"
+            >
+              +10 mp
             </button>
           </div>
         </div>

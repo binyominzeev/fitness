@@ -39,7 +39,9 @@ function parseWorkoutLog(value: unknown): WorkoutLogEntry[] {
 function workoutLogReducer(state: WorkoutLogEntry[], action: WorkoutLogAction): WorkoutLogEntry[] {
   switch (action.type) {
     case "add":
-      if (state.some((entry) => entry.id === action.entry.id)) return state;
+      if (state.some((entry) => entry.id === action.entry.id)) {
+        return state.map((entry) => (entry.id === action.entry.id ? action.entry : entry));
+      }
       return [...state, action.entry].slice(-MAX_WORKOUT_LOG_ENTRIES);
   }
 }
